@@ -21,6 +21,7 @@ const handler = NextAuth({
     //   from: "NextAuth.js <no-reply@example.com>",
     // }),
   ],
+  secret: process.env.NEXTAUTH_SECRET, // Add this line
 });
 
 export { handler as GET, handler as POST };
