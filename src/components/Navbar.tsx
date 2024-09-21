@@ -5,7 +5,11 @@ function Navbar() {
   return (
     <div className="mx-10 mt-5 flex justify-between">
       <div>
-        <h1>My Resume</h1>
+        <Link href="/">
+          <button>
+            <h1>My Resume</h1>
+          </button>
+        </Link>
       </div>
       <div>
         <ul className="flex gap-4">
