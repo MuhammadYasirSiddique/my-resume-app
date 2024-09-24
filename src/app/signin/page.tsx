@@ -99,6 +99,7 @@
 import { useSession, signIn, signOut } from "next-auth/react";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 // TypeScript interface for email sign-in form data
 interface SignInFormData {
@@ -119,16 +120,31 @@ const Signin: React.FC = () => {
   };
 
   // Handle email sign-in submission
-  const handleSubmit = async (e: FormEvent) => {
+  const router = useRouter();
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const result = await signIn("credentials", {
+
+    const formData = new FormData(e.currentTarget);
+    const res = await signIn("credentials", {
       redirect: false,
-      email: formData.email,
-      password: formData.password,
+      email: formData.get("email"),
+      password: formData.get("password"),
     });
 
-    if (result?.error) {
-      alert(result.error);
+    // const result = await signIn("credentials", {
+    //   redirect: false,
+    //   email: formData.email,
+    //   password: formData.password,
+    // });
+
+    // if (result?.error) {
+    //   alert(result.error);
+    // }
+
+    console.log({ res });
+    if (!res?.error) {
+      router.push("/");
+      router.refresh();
     }
   };
 

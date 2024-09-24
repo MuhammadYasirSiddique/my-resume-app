@@ -1,5 +1,7 @@
+"use client";
 import Link from "next/link";
 import React from "react";
+// import { useSession } from "next-auth/react";
 
 function Navbar() {
   return (
@@ -22,12 +24,6 @@ function Navbar() {
             {" "}
             <Link href="/signin">
               <button>Sign-in </button>
-            </Link>
-          </li>
-          <li>
-            {" "}
-            <Link href="/contact">
-              <button>Contact </button>
             </Link>
           </li>
         </ul>
