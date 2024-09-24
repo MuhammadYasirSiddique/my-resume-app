@@ -180,7 +180,12 @@ function NavbarLogin() {
       </div>
 
       {/* Hamburger menu icon for small screens */}
-      <button className="menu-button lg:hidden" onClick={toggleMobileMenu}>
+      <button
+        className={`menu-button lg:hidden transition-all duration-300 ${
+          mobileMenuVisible ? "rotate-90" : ""
+        }`}
+        onClick={toggleMobileMenu}
+      >
         {mobileMenuVisible ? <X size={30} /> : <Menu size={30} />}
       </button>
 
@@ -205,59 +210,14 @@ function NavbarLogin() {
           </div>
         </div>
         {/* Sub-menu (Dropdown) */}
-        {menuVisible && (
-          <div className="sub-menu absolute right-0 mt-2 w-52 bg-white shadow-lg rounded-md p-4">
-            <div className="flex items-center mb-4">
-              <Image
-                src={
-                  session?.user?.image || "/profileimg.png"
-                  // "https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250"
-                }
-                height={40}
-                width={40}
-                alt="Profile Image"
-                className="rounded-full"
-              />
-              <div className="ml-2">
-                <h2 className="text-sm font-semibold">
-                  {session?.user?.name || "Guest User"}
-                </h2>
-                <p className="text-xs text-gray-500">
-                  {session?.user?.email || "guest@example.com"}
-                </p>
-              </div>
-            </div>
-            <hr />
-            <div className="my-4">
-              <Link href="/dashboard">
-                <button onClick={() => setMenuVisible(false)}>
-                  <p className="text-md text-gray-500">Dashboard</p>
-                </button>
-              </Link>
-            </div>
-            {/* Logout Button */}
-            <button
-              onClick={() => {
-                signOut();
-                setMenuVisible(false);
-              }}
-              className="mt-2 w-full bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600"
-            >
-              Logout
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Mobile Menu */}
-      {mobileMenuVisible && (
-        <div className="absolute top-14 right-0 bg-white shadow-lg rounded-md p-4 lg:hidden sub-menu">
+        <div
+          className={`sub-menu absolute right-0 mt-2 w-52 bg-white shadow-lg rounded-md p-4 slide-menu ${
+            menuVisible ? "open" : ""
+          }`}
+        >
           <div className="flex items-center mb-4">
             <Image
-              src={
-                session?.user?.image || "/profile.png"
-                // "https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250"
-              }
+              src={session?.user?.image || "/profileimg.png"}
               height={40}
               width={40}
               alt="Profile Image"
@@ -275,7 +235,7 @@ function NavbarLogin() {
           <hr />
           <div className="my-4">
             <Link href="/dashboard">
-              <button onClick={() => setMobileMenuVisible(false)}>
+              <button onClick={() => setMenuVisible(false)}>
                 <p className="text-md text-gray-500">Dashboard</p>
               </button>
             </Link>
@@ -284,14 +244,72 @@ function NavbarLogin() {
           <button
             onClick={() => {
               signOut();
-              setMobileMenuVisible(false);
+              setMenuVisible(false);
             }}
             className="mt-2 w-full bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600"
           >
             Logout
           </button>
         </div>
-      )}
+      </div>
+
+      {/* Mobile Menu */}
+      <div
+        className={`absolute top-14 right-10 w-52 bg-white shadow-lg rounded-md p-4 lg:hidden sub-menu slide-menu ${
+          mobileMenuVisible ? "open" : ""
+        }`}
+      >
+        <div className="flex items-center mb-4">
+          <Image
+            src={session?.user?.image || "/profileimg.png"}
+            height={40}
+            width={40}
+            alt="Profile Image"
+            className="rounded-full"
+          />
+          <div className="ml-2">
+            <h2 className="text-sm font-semibold">
+              {session?.user?.name || "Guest User"}
+            </h2>
+            <p className="text-xs text-gray-500">
+              {session?.user?.email || "guest@example.com"}
+            </p>
+          </div>
+        </div>
+        <hr />
+        <div className="my-4">
+          <Link href="/dashboard">
+            <button onClick={() => setMobileMenuVisible(false)}>
+              <p className="text-md text-gray-500">Dashboard</p>
+            </button>
+          </Link>
+        </div>
+        {/* Logout Button */}
+        <button
+          onClick={() => {
+            signOut();
+            setMobileMenuVisible(false);
+          }}
+          className="mt-2 w-full bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600"
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* Add styles for the sliding effect */}
+      <style jsx>{`
+        .slide-menu {
+          transition: all 0.3s ease-in-out;
+          max-height: 0;
+          opacity: 0;
+          overflow: hidden;
+        }
+
+        .slide-menu.open {
+          max-height: 500px; /* Adjust as necessary */
+          opacity: 1;
+        }
+      `}</style>
     </div>
   );
 }
