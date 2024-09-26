@@ -9,6 +9,7 @@ import React, {
 } from "react";
 // import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { signIn } from "next-auth/react";
 
 // Define TypeScript interface for form data
 interface FormData {
@@ -187,7 +188,7 @@ const SignUpForm = () => {
           </div>
 
           <button
-            // onClick={() => handleSocialSignIn("google")}
+            onClick={() => signIn("google")}
             className="w-full flex justify-center items-center px-4 py-2 mt-4 bg-white text-black font-semibold rounded-md shadow hover:bg-gray-200 transition-colors duration-300 gap-2 sm:gap-4"
           >
             <Image src="/google.png" height={20} width={20} alt="Google Logo" />
