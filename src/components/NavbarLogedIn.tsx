@@ -249,12 +249,8 @@ function NavbarLogin() {
               className="rounded-full"
             />
             <div className="ml-2">
-              <h2 className="text-sm font-semibold">
-                {session?.user?.name || "Guest User"}
-              </h2>
-              <p className="text-xs text-gray-500">
-                {session?.user?.email || "guest@example.com"}
-              </p>
+              <h2 className="text-sm font-semibold">{session?.user?.name}</h2>
+              <p className="text-xs text-gray-500">{session?.user?.email}</p>
             </div>
           </div>
           <hr />
@@ -290,12 +286,8 @@ function NavbarLogin() {
             className="rounded-full"
           />
           <div className="ml-2">
-            <h2 className="text-sm font-semibold">
-              {session?.user?.name || "Guest User"}
-            </h2>
-            <p className="text-xs text-gray-500">
-              {session?.user?.email || "guest@example.com"}
-            </p>
+            <h2 className="text-sm font-semibold">{session?.user?.name}</h2>
+            <p className="text-xs text-gray-500">{session?.user?.email}</p>
           </div>
         </div>
         <hr />
