@@ -118,7 +118,7 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         const response = await sql`
-          SELECT * FROM sample_users WHERE email = ${credentials?.email}`;
+          SELECT * FROM resume_users WHERE email = ${credentials?.email}`;
         const user = response.rows[0];
 
         if (!user) {
