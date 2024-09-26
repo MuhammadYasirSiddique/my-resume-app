@@ -4,7 +4,7 @@ import { drizzle } from "drizzle-orm/vercel-postgres";
 // import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
 // Users Table Schema
-export const users = pgTable("users", {
+export const users = pgTable("resume_users", {
   id: uuid("id").primaryKey().default(`gen_random_uuid()`).notNull(), // UUID for user ID using sql
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(), // Email must be unique

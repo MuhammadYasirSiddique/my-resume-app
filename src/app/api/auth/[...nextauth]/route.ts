@@ -118,7 +118,7 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         const response = await sql`
-        SELECT * FROM sample_users WHERE email = ${credentials?.email}`;
+          SELECT * FROM sample_users WHERE email = ${credentials?.email}`;
         const user = response.rows[0];
 
         if (!user) {
@@ -158,15 +158,24 @@ const handler = NextAuth({
         try {
           // Check if user already exists in the database
           const existingUser = await sql`
-            SELECT * FROM sample_users WHERE email = ${user.email}
-          `;
+              SELECT * FROM resume_users WHERE email = ${user.email}
+            `;
 
           if (existingUser.rowCount === 0) {
             // Insert new user into the database
             await sql`
-              INSERT INTO sample_users (name, email, password) 
-              VALUES (${user?.name}, ${user?.email}, ${user?.id})
-            `;
+                INSERT INTO resume_users (
+    name, email, oauth_provider, oauth_provider_id, profile_image
+  )
+  VALUES (
+    ${user?.name}, 
+    ${user?.email}, 
+    
+    ${account.provider || null}, 
+    ${account.providerAccountId || null},
+    ${user?.image || null}
+  )
+`;
             console.log("New user added to database");
           } else {
             console.log("User already exists in database");

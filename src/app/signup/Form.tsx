@@ -567,7 +567,7 @@ const SignUpForm = () => {
             </button>
 
             <button
-              // onClick={() => handleSocialSignIn("github")}
+              onClick={() => signIn("github")}
               className="w-full flex justify-center items-center px-4 py-2 mt-4 bg-gray-800 text-white font-semibold rounded-md shadow hover:bg-gray-900 transition-colors duration-300 gap-2 sm:gap-4"
             >
               <Image
