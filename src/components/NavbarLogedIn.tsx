@@ -133,6 +133,7 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
+import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
 import { Menu, X } from "lucide-react"; // Importing icons from lucide-react
 
 function NavbarLogin() {
@@ -168,6 +169,30 @@ function NavbarLogin() {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [menuVisible, mobileMenuVisible]);
+
+  // Function to handle sign out with react-hot-toast
+  const handleSignOut = () => {
+    toast.promise(
+      signOut({ redirect: true }).then(() => {
+        setMenuVisible(false);
+        setMobileMenuVisible(false);
+      }),
+      {
+        loading: "Logging out...",
+        success: "Logged out successfully!",
+        error: "Error logging out!",
+      },
+      {
+        duration: 3000,
+        style: {
+          fontSize: "16px",
+          borderRadius: "8px",
+          backgroundColor: "#1f2937", // Custom background color
+          color: "#fff", // Custom text color
+        },
+      }
+    );
+  };
 
   return (
     <div className="mx-10 mt-5 flex justify-between items-center">
@@ -242,13 +267,10 @@ function NavbarLogin() {
           </div>
           {/* Logout Button */}
           <button
-            onClick={() => {
-              signOut();
-              setMenuVisible(false);
-            }}
+            onClick={handleSignOut}
             className="mt-2 w-full bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600"
           >
-            Logout
+            Sign out
           </button>
         </div>
       </div>
@@ -286,13 +308,10 @@ function NavbarLogin() {
         </div>
         {/* Logout Button */}
         <button
-          onClick={() => {
-            signOut();
-            setMobileMenuVisible(false);
-          }}
+          onClick={handleSignOut}
           className="mt-2 w-full bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600"
         >
-          Logout
+          Sign out
         </button>
       </div>
 
@@ -310,6 +329,9 @@ function NavbarLogin() {
           opacity: 1;
         }
       `}</style>
+
+      {/* Toast notifications */}
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 }

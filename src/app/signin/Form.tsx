@@ -179,11 +179,139 @@
 
 // export default SigninForm;
 
+// "use client";
+// import { signIn } from "next-auth/react";
+// import React, { useState, ChangeEvent, FormEvent } from "react";
+// import Image from "next/image";
+// import { useRouter } from "next/navigation";
+
+// // TypeScript interface for email sign-in form data
+// interface SignInFormData {
+//   email: string;
+//   password: string;
+// }
+
+// const SigninForm: React.FC = () => {
+//   const [formData, setFormData] = useState<SignInFormData>({
+//     email: "",
+//     password: "",
+//   });
+
+//   // Handle input changes for email/password
+//   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//   };
+
+//   // Handle email sign-in submission
+//   const router = useRouter();
+//   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+//     e.preventDefault();
+
+//     const formData = new FormData(e.currentTarget);
+//     const res = await signIn("credentials", {
+//       redirect: false,
+//       email: formData.get("email"),
+//       password: formData.get("password"),
+//     });
+
+//     console.log({ res });
+//     if (!res?.error) {
+//       router.push("/dashboard");
+//       router.refresh();
+//     }
+//   };
+
+//   return (
+//     <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-50">
+//       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+//         <div className="text-center">
+//           <h2 className="mt-6 text-lg sm:text-2xl font-bold text-gray-900">
+//             Sign in to your account
+//           </h2>
+//         </div>
+
+//         {/* Email Sign-in Form */}
+//         <form onSubmit={handleSubmit} className="space-y-4">
+//           <div>
+//             <label
+//               htmlFor="email"
+//               className="block text-sm font-medium text-gray-700"
+//             >
+//               Email
+//             </label>
+//             <input
+//               type="email"
+//               name="email"
+//               id="email"
+//               placeholder="Enter your email"
+//               value={formData.email}
+//               onChange={handleChange}
+//               required
+//               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+//             />
+//           </div>
+
+//           <div>
+//             <label
+//               htmlFor="password"
+//               className="block text-sm font-medium text-gray-700"
+//             >
+//               Password
+//             </label>
+//             <input
+//               type="password"
+//               name="password"
+//               id="password"
+//               placeholder="Enter your password"
+//               value={formData.password}
+//               onChange={handleChange}
+//               required
+//               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+//             />
+//           </div>
+
+//           <button
+//             type="submit"
+//             className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300"
+//           >
+//             Sign In with Email
+//           </button>
+//         </form>
+//         {/* Sign in with Google */}
+//         <button
+//           onClick={() => signIn("google")}
+//           className="w-full flex justify-center items-center px-4 py-2 mt-4 bg-white text-black
+//             font-semibold rounded-md shadow hover:bg-gray-100 gap-2 sm:gap-4"
+//         >
+//           <div>
+//             <Image src="/google.png" height={20} width={20} alt="Google Logo" />
+//           </div>
+//           <div>Sign in with Google</div>
+//         </button>
+//         {/* Sign in with GitHub */}
+//         <button
+//           // onClick={() => signIn("github")}
+//           className="w-full flex justify-center items-center px-4 py-2 mt-4 bg-gray-600 text-white
+//             font-semibold rounded-md shadow hover:bg-gray-700 gap-2 sm:gap-4"
+//         >
+//           <div>
+//             <Image src="/github.png" height={20} width={20} alt="GitHub Logo" />
+//           </div>
+//           <div>Sign in with GitHub</div>
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default SigninForm;
+
 "use client";
 import { signIn } from "next-auth/react";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
 
 // TypeScript interface for email sign-in form data
 interface SignInFormData {
@@ -208,21 +336,48 @@ const SigninForm: React.FC = () => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const res = await signIn("credentials", {
-      redirect: false,
-      email: formData.get("email"),
-      password: formData.get("password"),
-    });
 
-    console.log({ res });
-    if (!res?.error) {
-      router.push("/dashboard");
-      router.refresh();
-    }
+    // Use toast.promise to handle the promise from signIn
+    toast.promise(
+      signIn("credentials", {
+        redirect: false,
+        email: formData.get("email"),
+        password: formData.get("password"),
+      }).then(async (res) => {
+        if (res?.error) {
+          throw new Error(res.error); // This will trigger the error toast
+        }
+        if (res?.status === 200) {
+          router.push("/dashboard"); // Redirect on successful sign-in
+          router.refresh();
+        }
+        return res;
+      }),
+      {
+        loading: "Signing in...",
+        success: "Signed in successfully!",
+        error: "Failed to sign in. Please check your credentials.",
+      },
+      {
+        duration: 2000, // Duration of the toast (ms)
+        style: {
+          fontSize: "16px", // Control the size of the text
+          borderRadius: "10px", // Add a border radius
+          padding: "16px", // Increase the padding for better spacing
+          backgroundColor: "#1f2937", // Custom dark background color
+          color: "#fff", // White text color for better readability
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", // Subtle shadow for depth
+        },
+        // icon: "🚀",
+      } // Custom icon
+    );
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-50">
+      {/* Render toast notifications */}
+      <Toaster position="top-right" reverseOrder={false} />
+
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <h2 className="mt-6 text-lg sm:text-2xl font-bold text-gray-900">
@@ -277,6 +432,7 @@ const SigninForm: React.FC = () => {
             Sign In with Email
           </button>
         </form>
+
         {/* Sign in with Google */}
         <button
           onClick={() => signIn("google")}
@@ -288,9 +444,10 @@ const SigninForm: React.FC = () => {
           </div>
           <div>Sign in with Google</div>
         </button>
+
         {/* Sign in with GitHub */}
         <button
-          // onClick={() => signIn("github")}
+          onClick={() => signIn("github")}
           className="w-full flex justify-center items-center px-4 py-2 mt-4 bg-gray-600 text-white 
             font-semibold rounded-md shadow hover:bg-gray-700 gap-2 sm:gap-4"
         >
