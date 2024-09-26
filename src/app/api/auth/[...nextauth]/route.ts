@@ -9,6 +9,7 @@ import { sql } from "@vercel/postgres";
 
 const handler = NextAuth({
   session: { strategy: "jwt" },
+  pages: { signIn: "/signin" },
   providers: [
     // OAuth authentication providers...
 
