@@ -312,6 +312,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
+import Link from "next/link";
 
 // TypeScript interface for email sign-in form data
 interface SignInFormData {
@@ -424,7 +425,12 @@ const SigninForm: React.FC = () => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
           </div>
-
+          <span className="text-sm">
+            Do not have an account?
+            <Link href="/signup">
+              <span className="text-indigo-600"> Register here.</span>
+            </Link>
+          </span>
           <button
             type="submit"
             className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300"

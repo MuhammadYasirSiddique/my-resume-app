@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { FiArrowRight } from "react-icons/fi"; // For arrow icons in buttons
+import Link from "next/link";
 
 const LandingPage: React.FC = () => {
   return (
@@ -15,12 +16,12 @@ const LandingPage: React.FC = () => {
             Create a standout resume in minutes with our user-friendly online
             tool.
           </p>
-          <a
-            href="#features"
+          <Link
+            href="/dashboard"
             className="inline-block px-6 py-3 bg-white text-blue-600 font-semibold rounded-md shadow hover:bg-gray-100 transition duration-300"
           >
             Get Started <FiArrowRight className="inline ml-2" />
-          </a>
+          </Link>
         </div>
         {/* Decorative Blob Shape */}
         <div className="absolute top-0 left-0 right-0 bottom-0 bg-opacity-20 bg-gradient-to-b from-blue-400 to-transparent rounded-full mix-blend-overlay pointer-events-none"></div>
@@ -38,7 +39,7 @@ const LandingPage: React.FC = () => {
               <Image
                 width={50}
                 height={50}
-                src="/icons/customize.svg"
+                src="/customize.svg"
                 alt="Customize"
                 className="w-12 h-12 mx-auto mb-4"
               />
@@ -54,7 +55,7 @@ const LandingPage: React.FC = () => {
               <Image
                 width={50}
                 height={50}
-                src="/icons/templates.svg"
+                src="/templates.png"
                 alt="Templates"
                 className="w-12 h-12 mx-auto mb-4"
               />
@@ -70,7 +71,7 @@ const LandingPage: React.FC = () => {
               <Image
                 width={50}
                 height={50}
-                src="/icons/download.svg"
+                src="/download.svg"
                 alt="Download"
                 className="w-12 h-12 mx-auto mb-4"
               />
@@ -95,12 +96,12 @@ const LandingPage: React.FC = () => {
           <p className="text-lg md:text-xl mb-8">
             Sign up now and start building your professional resume with ease!
           </p>
-          <a
-            href="#"
+          <Link
+            href="/signup"
             className="inline-block px-6 py-3 bg-white text-green-500 font-semibold rounded-md shadow hover:bg-gray-100 transition duration-300"
           >
             Sign Up for Free <FiArrowRight className="inline ml-2" />
-          </a>
+          </Link>
         </div>
       </section>
 

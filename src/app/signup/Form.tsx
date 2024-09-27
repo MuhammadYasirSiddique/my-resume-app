@@ -389,6 +389,7 @@ import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { toast, Toaster } from "react-hot-toast"; // Import toast and Toaster
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // Define TypeScript interface for form data
 interface FormData {
@@ -532,7 +533,12 @@ const SignUpForm = () => {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
             </div>
-
+            <span className="text-sm">
+              Already have an account?
+              <Link href="/signin">
+                <span className="text-indigo-600"> Sign In</span>
+              </Link>
+            </span>
             <button
               type="submit"
               className="w-full px-4 py-2 mt-4 text-white bg-indigo-600 rounded-md shadow hover:bg-indigo-700 transition-colors duration-300"
