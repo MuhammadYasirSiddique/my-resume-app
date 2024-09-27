@@ -103,7 +103,7 @@ function Navbar() {
 
       {/* Mobile Menu with sliding effect */}
       <div
-        className={`absolute top-14 right-0 w-48 bg-white shadow-lg rounded-md p-4 lg:hidden sub-menu transition-all duration-300 ${
+        className={`absolute top-14 z-50 right-0 w-48 bg-white shadow-lg rounded-md p-4 lg:hidden sub-menu transition-all duration-300 ${
           mobileMenuVisible ? "slide-down" : "slide-up"
         }`}
         style={{ visibility: mobileMenuVisible ? "visible" : "hidden" }}

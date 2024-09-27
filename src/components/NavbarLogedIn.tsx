@@ -215,7 +215,7 @@ function NavbarLogin() {
       </button>
 
       {/* Profile Image and Submenu */}
-      <div className="relative hidden lg:block">
+      <div className="relative hidden lg:block z-50">
         <div className="flex justify-center items-center text-center text-base">
           <div className="mr-2">
             <p>Welcome, {session?.user?.name}!</p>
@@ -273,7 +273,7 @@ function NavbarLogin() {
 
       {/* Mobile Menu */}
       <div
-        className={`absolute top-14 right-10 w-52 bg-white shadow-lg rounded-md p-4 lg:hidden sub-menu slide-menu ${
+        className={`absolute top-14 z-50 right-10 w-52 bg-white shadow-lg rounded-md p-4 lg:hidden sub-menu slide-menu ${
           mobileMenuVisible ? "open" : ""
         }`}
       >
