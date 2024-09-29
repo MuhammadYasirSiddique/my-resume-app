@@ -349,6 +349,7 @@ const SigninForm: React.FC = () => {
           throw new Error(res.error); // This will trigger the error toast
         }
         if (res?.status === 200) {
+          // toast.success("Signed in successfully! from page");
           router.push("/dashboard"); // Redirect on successful sign-in
           router.refresh();
         }

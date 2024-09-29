@@ -446,9 +446,9 @@ const SignUpForm = () => {
             throw new Error("Failed to register");
           }
           // toast.success("User registered successfully!");
-          router.push("/dashboard"); // Redirect on successful sign-up
+          router.push("/verify"); // Redirect on successful sign-up
           router.refresh();
-          return "User registered successfully!";
+          return "User registered, Verfication email sent to your email address.";
         },
         error: (error) => {
           console.error(error);

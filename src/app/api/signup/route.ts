@@ -76,6 +76,8 @@ import { hash } from "bcryptjs"; // For hashing password if provided
 import { sql } from "@vercel/postgres"; // Adjust if you're using a different database client
 import { getServerSession } from "next-auth";
 // import { authOptions } from "@/lib/auth"; // Adjust the path to your `authOptions` configuration
+import { generateCode } from "@/utils/Token";
+import { sendVerificationEmail } from "@/utils/sendEmail";
 
 interface RequestBody {
   name: string;
@@ -98,10 +100,12 @@ export async function POST(req: NextRequest) {
       hashedPassword = await hash(body.password, 10);
     }
 
+    const verificationToken = generateCode();
     // Perform the database insertion, accounting for optional fields
     const response = await sql`
       INSERT INTO resume_users (
-    name, email, password, oauth_provider, oauth_provider_id, profile_image
+    name, email, password, oauth_provider, oauth_provider_id, profile_image, 
+    email_verified, verification_token
   )
   VALUES (
     ${body.name}, 
@@ -109,20 +113,28 @@ export async function POST(req: NextRequest) {
     ${hashedPassword}, 
     ${body.oauthProvider || null}, 
     ${body.oauthProviderId || null},
-    ${session?.user?.image || null}
+    ${session?.user?.image || null},
+    false,
+    ${verificationToken}    
   )
   RETURNING *;
 `;
 
+    // Send verification email
+    // const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify?token=${verificationToken}`;
+    await sendVerificationEmail(body.email, verificationToken);
+
     // Respond with the inserted user data
     return NextResponse.json({
-      message: "User registered successfully",
+      message: "User registered. Check your email for verification.",
+
       data: response.rows[0], // Return the first inserted row
     });
   } catch (error) {
     console.error("Error processing the request:", error);
+
     return NextResponse.json(
-      { message: "Error processing the request" },
+      { message: "Error registering user" },
       { status: 400 }
     );
   }
