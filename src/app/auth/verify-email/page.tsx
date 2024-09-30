@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+// import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation"; // Import useSearchParams
 
 const VerifyEmail = () => {
   const [token, setToken] = useState<string>("");
   const [message, setMessage] = useState("");
   const [submittedToken, setSubmittedToken] = useState<string | null>(null);
-
+  const searchParams = useSearchParams(); // Get query parameters
+  const email = searchParams.get("email"); // Retrieve the email from the query params
+  console.log(email);
   // Simulate a "database" token for verification purposes
   const dbtoken = 123456;
 
