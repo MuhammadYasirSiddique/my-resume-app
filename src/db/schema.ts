@@ -1,4 +1,11 @@
-import { pgTable, uuid, varchar, timestamp, text } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  varchar,
+  timestamp,
+  text,
+  boolean,
+} from "drizzle-orm/pg-core";
 import { sql } from "@vercel/postgres";
 import { drizzle } from "drizzle-orm/vercel-postgres";
 // import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
@@ -16,6 +23,8 @@ export const users = pgTable("resume_users", {
   updatedAt: timestamp("updated_at")
     .defaultNow()
     .$onUpdate(() => new Date()), // Automatically update timestamp
+  email_verified: boolean("email_verified").default(false),
+  verification_token: text("verification_token"),
 });
 
 // Sessions Table Schema
