@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     // If user is not found or token doesn't match
     if (user.length === 0) {
       return NextResponse.json(
-        { message: "Invalid email or token" },
+        { message: "Token invalid or expired" },
         { status: 400 }
       );
     }
