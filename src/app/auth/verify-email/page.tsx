@@ -11,6 +11,7 @@ const VerifyEmail = () => {
   const searchParams = useSearchParams(); // Get query parameters
   const email = searchParams.get("email"); // Retrieve the email from the query params
   const router = useRouter();
+  console.log(email);
   useEffect(() => {
     if (submittedToken && email) {
       setMessage("Verifying your email...");
