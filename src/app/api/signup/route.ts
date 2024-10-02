@@ -19,7 +19,21 @@ export async function POST(req: NextRequest) {
   try {
     const body: RequestBody = await req.json();
 
-    console.log("Data received from client:", body);
+    // console.log("Data received from client:", body);
+
+    // Check if the user already exists
+    const registeredUser = await sql`
+      SELECT * FROM resume_users WHERE email = ${body.email}
+    `;
+
+    if (registeredUser?.rowCount ?? 0 > 0) {
+      const user = registeredUser.rows[0];
+      console.log("Email: - " + user.email, " already taken");
+      return NextResponse.json(
+        { message: "User already exists" },
+        { status: 401 }
+      );
+    }
 
     // Hash password if it's provided (for normal sign-ups)
     let hashedPassword: string | null = null;

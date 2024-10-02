@@ -52,6 +52,11 @@ const SignUpForm = () => {
         password,
       }),
     });
+    console.log("Promise " + (await registrationPromise).status);
+    if ((await registrationPromise).status === 401) {
+      console.log("Email " + email + " already taken");
+      return toast.error("Email already taken");
+    }
 
     toast.promise(
       registrationPromise,
@@ -59,7 +64,7 @@ const SignUpForm = () => {
         loading: "Registering...",
         success: (response) => {
           if (!response.ok) {
-            throw new Error("Failed to register");
+            throw new Error("Failed to register from toast.promise");
           }
           // toast.success("User registered successfully!");
           // router.push("/verify-email", { state: { email } }); // Redirect on successful sign-up with email address in router state
