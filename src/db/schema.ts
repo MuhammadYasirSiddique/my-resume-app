@@ -62,6 +62,7 @@ export const passwordResets = pgTable("password_resets", {
   token: varchar("token", { length: 255 }), // Secure token for password reset
   expiresAt: timestamp("expires_at"), // Token expiry time
   createdAt: timestamp("created_at").defaultNow(),
+  old_password: varchar("old_password", { length: 255 }),
 });
 
 // Database instance
