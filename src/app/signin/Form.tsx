@@ -141,12 +141,17 @@ const SigninForm: React.FC = () => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
           </div>
-          <span className="text-sm">
-            Do not have an account?
-            <Link href="/signup">
-              <span className="text-indigo-600"> Register here.</span>
+          <div className="flex justify-between text-sm">
+            <span>
+              Do not have an account?
+              <Link href="/signup">
+                <span className="text-indigo-600"> Register here.</span>
+              </Link>
+            </span>
+            <Link href="/auth/forgeot-password">
+              <span className="text-indigo-600"> Forget Password</span>
             </Link>
-          </span>
+          </div>
           <button
             type="submit"
             className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300"
