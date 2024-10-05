@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     if (foundUser.email_verified) {
       return NextResponse.json(
         { message: "Email is already verified." },
-        { status: 400 }
+        { status: 404 }
       );
     }
 

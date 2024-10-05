@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 export const sendVerificationEmail = async (email: string, token: number) => {
   const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE,
-    port: 467,
+    port: Number(process.env.EMAIL_PORT),
     host: process.env.EMAIL_HOST,
     auth: {
       user: process.env.EMAIL_USER,

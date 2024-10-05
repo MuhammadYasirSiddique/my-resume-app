@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { LoaderCircle } from "lucide-react";
 
 const ForgotPasswordForm: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -104,7 +105,11 @@ const ForgotPasswordForm: React.FC = () => {
             disabled={loading}
             className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300"
           >
-            {loading ? "Sending..." : "Send Reset Code"}
+            {loading ? (
+              <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
+            ) : (
+              "Send Reset Code"
+            )}
           </button>
         </form>
       </div>

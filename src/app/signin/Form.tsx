@@ -2,9 +2,10 @@
 import { signIn } from "next-auth/react";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import Link from "next/link";
+import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 
 // TypeScript interface for email sign-in form data
 interface SignInFormData {
@@ -17,7 +18,8 @@ const SigninForm: React.FC = () => {
     email: "",
     password: "",
   });
-
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   // Handle input changes for email/password
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,7 +30,7 @@ const SigninForm: React.FC = () => {
   // Handle email sign-in submission
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setLoading(true);
     const formData = new FormData(e.currentTarget);
 
     // Perform the sign-in request
@@ -56,6 +58,7 @@ const SigninForm: React.FC = () => {
 
         // Redirect to the verify-email page
         router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+        setLoading(false);
         return;
       }
 
@@ -70,6 +73,7 @@ const SigninForm: React.FC = () => {
           color: "#fff",
         },
       });
+      setLoading(false);
       return;
     }
 
@@ -85,6 +89,7 @@ const SigninForm: React.FC = () => {
           color: "#fff",
         },
       });
+      setLoading(false);
       router.push("/dashboard");
       router.refresh();
     }
@@ -130,16 +135,29 @@ const SigninForm: React.FC = () => {
             >
               Password
             </label>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
+            <div className="relative mt-1">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                id="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-3 text-gray-500 hover:text-gray-700 focus:outline-none"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
           <div className="flex justify-between text-sm">
             <span>
@@ -156,7 +174,11 @@ const SigninForm: React.FC = () => {
             type="submit"
             className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300"
           >
-            Sign In with Email
+            {loading ? (
+              <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
+            ) : (
+              "Sign in"
+            )}
           </button>
         </form>
 
