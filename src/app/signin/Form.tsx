@@ -148,7 +148,7 @@ const SigninForm: React.FC = () => {
                 <span className="text-indigo-600"> Register here.</span>
               </Link>
             </span>
-            <Link href="/auth/forgeot-password">
+            <Link href="/auth/forgot-password">
               <span className="text-indigo-600"> Forget Password</span>
             </Link>
           </div>

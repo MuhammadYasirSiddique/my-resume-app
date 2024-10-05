@@ -9,4 +9,4 @@ export const config = {
   ],
 };
 
-console.log("Middleware applied on /dashboard");
+// console.log("Middleware applied on /dashboard");
