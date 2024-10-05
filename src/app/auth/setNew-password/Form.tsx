@@ -51,7 +51,7 @@ export default function SetNewPassword() {
         setError("Failed to update password");
       }
     } catch (err) {
-      setError("Error updating password");
+      setError("Error updating password" + err);
     }
   };
   useEffect(() => {

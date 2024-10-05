@@ -8,7 +8,7 @@ import { sendForgotPassLinkEmail } from "@/utils/sendEmail";
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const { email } = await req.json();
-    // console.log(email);
+    console.log(email);
 
     // Validate that the email was passed
     if (!email) {
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     const user = await db.select().from(users).where(eq(users.email, email));
     const foundUser = user[0];
-    console.log(foundUser);
+    // console.log(foundUser);
 
     if (!foundUser) {
       return NextResponse.json({ message: "User not found." }, { status: 404 });

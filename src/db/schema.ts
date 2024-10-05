@@ -63,6 +63,7 @@ export const passwordResets = pgTable("password_resets", {
   expiresAt: timestamp("expires_at"), // Token expiry time
   createdAt: timestamp("created_at").defaultNow(),
   old_password: varchar("old_password", { length: 255 }),
+  tokenUsed: boolean("token_used").default(false),
 });
 
 // Database instance
