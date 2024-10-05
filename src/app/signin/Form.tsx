@@ -2,7 +2,7 @@
 import { signIn } from "next-auth/react";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import Link from "next/link";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
