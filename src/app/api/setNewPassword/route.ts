@@ -85,6 +85,8 @@ async function verifyToken(token: string, userid: string) {
       );
     }
     return true; // Token is valid and not expired
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
   return false;
 }
