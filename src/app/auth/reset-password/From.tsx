@@ -41,6 +41,7 @@ const ResetPasswordPage = () => {
 
     if (password !== confirmPassword) {
       toast.error("Passwords do not match!");
+      setLoading(false);
       return;
     }
 
@@ -181,7 +182,10 @@ const ResetPasswordPage = () => {
 
           <button
             type="submit"
-            className="w-full px-4 py-2 text-white bg-indigo-600 rounded-md shadow hover:bg-indigo-700 transition duration-300"
+            className={`w-full h-10 px-4 py-2 text-white bg-indigo-600 rounded-md shadow hover:bg-indigo-700 transition duration-300 ${
+              loading ? "bg-indigo-400 cursor-not-allowed" : ""
+            }`}
+            disabled={loading}
           >
             {loading ? (
               <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />

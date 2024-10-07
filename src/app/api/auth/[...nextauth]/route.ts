@@ -1,10 +1,13 @@
 import NextAuth from "next-auth";
+import { db } from "@/db/index";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { users } from "@/db/schema"; // Assuming you have users schema
 
 import { compare } from "bcryptjs";
 import { sql } from "@vercel/postgres";
+import { eq } from "drizzle-orm";
 
 const handler = NextAuth({
   session: { strategy: "jwt" },
@@ -24,17 +27,21 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const response = await sql`
-          SELECT * FROM resume_users WHERE email = ${credentials?.email}`;
-        const user = response.rows[0];
-
+        // const response = await sql`
+        //   SELECT * FROM resume_users WHERE email = ${credentials?.email}`;
+        const response = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, credentials?.email || ""));
+        const user = response[0];
+        // console.log(user);
         if (!user) {
           throw new Error("User not found.");
         }
 
         // Check if the email is verified (assuming email_verified is a boolean field)
         const emailVerified = user.email_verified;
-        console.log(emailVerified);
+        // console.log(emailVerified);
 
         // If the email is not verified, throw an error
         if (!emailVerified) {
@@ -44,7 +51,7 @@ const handler = NextAuth({
 
         const passwordMatch = await compare(
           credentials?.password || "",
-          user.password
+          user.password || ""
         );
 
         if (!passwordMatch) {

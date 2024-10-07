@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation"; // For handling navigation and search params
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+import { LoaderCircle } from "lucide-react";
 
 export default function SetNewPassword() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -20,15 +22,18 @@ export default function SetNewPassword() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setLoading(true);
     // Validate passwords match
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
+      toast.error("Passwords do not match");
+
+      setLoading(false);
       return;
     }
 
     if (!userid || !token) {
-      setError("Invalid password reset link");
+      toast.error("Invalid password reset link");
+      setLoading(false);
       return;
     }
 
@@ -48,10 +53,12 @@ export default function SetNewPassword() {
       } else {
         const errorMessage = await response.text();
         console.log("Failed to update password", errorMessage);
-        setError("Failed to update password");
+        toast.error("Failed to update password");
       }
     } catch (err) {
-      setError("Error updating password" + err);
+      toast.error("Error updating password" + err);
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -63,12 +70,12 @@ export default function SetNewPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <Toaster position="top-right" reverseOrder={false} />
       <div className="w-full max-w-md space-y-8">
         <div>
           <h2 className="text-center text-3xl font-bold text-gray-900">
             Set New Password
           </h2>
-          {error && <p className="text-red-500 text-center mt-4">{error}</p>}
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
@@ -107,9 +114,15 @@ export default function SetNewPassword() {
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={loading}
+              className={`w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              Reset Password
+              {loading ? (
+                <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
+              ) : (
+                "Set Password"
+              )}
             </button>
           </div>
         </form>

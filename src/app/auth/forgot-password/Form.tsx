@@ -103,7 +103,8 @@ const ForgotPasswordForm: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300"
+            className={`w-full h-10 px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300 
+              ${loading ? "bg-indigo-400 cursor-not-allowed" : ""}`}
           >
             {loading ? (
               <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />

@@ -37,11 +37,10 @@ export async function POST(req: NextRequest) {
     // Generate a new verification code
     const newVerificationCode = generateCode();
 
-    const newVerificationCodeString = newVerificationCode.toString();
     // Update the verification code in the database
     await db
       .update(users)
-      .set({ verification_token: newVerificationCodeString })
+      .set({ verification_token: newVerificationCode })
       .where(eq(users.email, email));
 
     // Send the verification email

@@ -55,24 +55,3 @@ export async function POST(req: NextRequest, res: NextResponse) {
     );
   }
 }
-
-// import { NextRequest } from "next/server";
-
-// export async function GET(req: NextRequest) {
-//   try {
-//     // Get email from query parameters
-//     const { searchParams } = new URL(req.url);
-//     const email = searchParams.get("email");
-
-//     console.log(email);
-
-//     return new Response(JSON.stringify({ message: "Success", email }), {
-//       status: 200,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     return new Response(JSON.stringify({ message: "Error" + error }), {
-//       status: 500,
-//     });
-//   }
-// }

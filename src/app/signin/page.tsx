@@ -8,6 +8,7 @@ async function Signin() {
   if (session) {
     redirect("/dashboard");
   }
+
   return (
     <div>
       <SigninForm />

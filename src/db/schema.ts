@@ -5,6 +5,7 @@ import {
   timestamp,
   text,
   boolean,
+  integer,
 } from "drizzle-orm/pg-core";
 import { sql } from "@vercel/postgres";
 import { drizzle } from "drizzle-orm/vercel-postgres";
@@ -24,7 +25,7 @@ export const users = pgTable("resume_users", {
     .defaultNow()
     .$onUpdate(() => new Date()), // Automatically update timestamp
   email_verified: boolean("email_verified").default(false),
-  verification_token: text("verification_token"),
+  verification_token: integer("verification_token"),
 });
 
 // Sessions Table Schema
