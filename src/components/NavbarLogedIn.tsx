@@ -169,7 +169,14 @@ function NavbarLogin() {
           </div>
         </div>
         <hr />
-        <div className="my-4">
+        <div className="mt-2">
+          <Link href="/auth/reset-password">
+            <button onClick={() => setMenuVisible(false)}>
+              <p className="text-sm text-gray-500">Reset Password</p>
+            </button>
+          </Link>
+        </div>
+        <div className="">
           <Link href="/dashboard">
             <button onClick={() => setMobileMenuVisible(false)}>
               <p className="text-md text-gray-500">Dashboard</p>

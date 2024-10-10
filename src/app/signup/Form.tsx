@@ -35,6 +35,7 @@ const SignUpForm = () => {
   // Handle input change with type safety
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({});
   };
 
   const router = useRouter();
@@ -218,7 +219,9 @@ const SignUpForm = () => {
           </span>
           <button
             type="submit"
-            className="w-full px-4 py-2 mt-4 text-white bg-indigo-600 rounded-md shadow hover:bg-indigo-700 transition-colors duration-300"
+            className={`w-full px-4 py-2 mt-4 text-white bg-indigo-600 rounded-md shadow hover:bg-indigo-700 transition-colors duration-300
+            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}  `}
+            disabled={loading}
           >
             {loading ? (
               <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
@@ -242,7 +245,9 @@ const SignUpForm = () => {
           <div className="mt-6 grid grid-cols-1 gap-3">
             <button
               onClick={() => signIn("google")}
-              className="w-full flex justify-center items-center px-4 py-2 mt-4 bg-white text-black font-semibold rounded-md shadow hover:bg-gray-200 transition-colors duration-300 gap-2 sm:gap-4"
+              className={`w-full flex justify-center items-center px-4 py-2 mt-4 bg-white text-black font-semibold rounded-md shadow hover:bg-gray-200 transition-colors duration-300 gap-2 sm:gap-4
+              ${loading ? "bg-gray-400 cursor-not-allowed" : ""}  `}
+              disabled={loading}
             >
               <Image
                 src="/google.png"
@@ -255,7 +260,9 @@ const SignUpForm = () => {
 
             <button
               onClick={() => signIn("github")}
-              className="w-full flex justify-center items-center px-4 py-2 mt-4 bg-gray-800 text-white font-semibold rounded-md shadow hover:bg-gray-900 transition-colors duration-300 gap-2 sm:gap-4"
+              className={`w-full flex justify-center items-center px-4 py-2 mt-4 bg-gray-800 text-white font-semibold rounded-md shadow hover:bg-gray-900 transition-colors duration-300 gap-2 sm:gap-4 
+                ${loading ? "bg-gray-400 cursor-not-allowed" : ""}  `}
+              disabled={loading}
             >
               <Image
                 src="/github.png"

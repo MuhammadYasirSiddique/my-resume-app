@@ -172,7 +172,9 @@ const SigninForm: React.FC = () => {
           </div>
           <button
             type="submit"
-            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300"
+            className={`w-full px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300
+            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}  `}
+            disabled={loading}
           >
             {loading ? (
               <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
@@ -185,8 +187,10 @@ const SigninForm: React.FC = () => {
         {/* Sign in with Google */}
         <button
           onClick={() => signIn("google")}
-          className="w-full flex justify-center items-center px-4 py-2 mt-4 bg-white text-black 
-            font-semibold rounded-md shadow hover:bg-gray-100 gap-2 sm:gap-4"
+          className={`w-full flex justify-center items-center px-4 py-2 mt-4 bg-white text-black 
+            font-semibold rounded-md shadow hover:bg-gray-100 gap-2 sm:gap-4
+            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}  `}
+          disabled={loading}
         >
           <div>
             <Image src="/google.png" height={20} width={20} alt="Google Logo" />
@@ -197,8 +201,10 @@ const SigninForm: React.FC = () => {
         {/* Sign in with GitHub */}
         <button
           onClick={() => signIn("github")}
-          className="w-full flex justify-center items-center px-4 py-2 mt-4 bg-gray-600 text-white 
-            font-semibold rounded-md shadow hover:bg-gray-700 gap-2 sm:gap-4"
+          className={`w-full flex justify-center items-center px-4 py-2 mt-4 bg-gray-600 text-white 
+            font-semibold rounded-md shadow hover:bg-gray-700 gap-2 sm:gap-4
+            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}  `}
+          disabled={loading}
         >
           <div>
             <Image src="/github.png" height={20} width={20} alt="GitHub Logo" />

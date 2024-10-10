@@ -1,11 +1,9 @@
 import { z } from "zod"; // Import Zod for validation
 
 // Define Zod schema for form validation
-export const signupSchema = z
+export const newPasswordSchema = z
   .object({
-    name: z.string().min(2, "Name is required"),
-    email: z.string().email("Invalid email address"),
-    password: z
+    newPassword: z
       .string()
       .min(6, "Password must be at least 6 characters long")
       .regex(
@@ -14,13 +12,11 @@ export const signupSchema = z
       ),
     confirmPassword: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
 
-export const verifyEmail = z.object({
-  code: z.number().refine((val) => val.toString().length === 6, {
-    message: "Invalid code. Code must be exactly 6 digits.",
-  }),
+export const forgotEmailSchema = z.object({
+  email: z.string().email("Invalid email address"),
 });
