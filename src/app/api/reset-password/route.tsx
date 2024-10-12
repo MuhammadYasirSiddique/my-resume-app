@@ -6,11 +6,42 @@ import { db } from "@/db/index"; // Drizzle ORM database instance
 import { users, passwordResets } from "@/db/schema"; // Import tables
 import { eq } from "drizzle-orm"; // For SQL conditions
 import { getServerSession } from "next-auth"; // Import NextAuth
+import arcjet, { detectBot, tokenBucket } from "@arcjet/next";
+
+const aj = arcjet({
+  key: process.env.ARCJET_KEY!, // Get your site key from https://app.arcjet.com
+  characteristics: ["userId"], // track requests by a custom user ID
+  rules: [
+    // Create a token bucket rate limit. Other algorithms are supported.
+    tokenBucket({
+      mode: "LIVE", // will block requests. Use "DRY_RUN" to log only
+      refillRate: 5, // refill 5 tokens per interval
+      interval: 60, // refill every 10 seconds
+      capacity: 10, // bucket maximum capacity of 10 tokens
+    }),
+    detectBot({
+      mode: "LIVE", // will block requests. Use "DRY_RUN" to log only
+      // Block all bots except search engine crawlers. See the full list of bots
+      // for other options: https://arcjet.com/bot-list
+      allow: ["CATEGORY:SEARCH_ENGINE"],
+    }),
+  ],
+});
 
 // POST: /api/reset-password
 export async function POST(req: Request) {
   try {
     const { oldpassword, password } = await req.json(); // Get old and new passwords from request body
+    const userId = "123";
+    const decision = await aj.protect(req, { userId, requested: 1 }); // Deduct 5 tokens from the bucket
+    console.log(decision);
+
+    if (decision.isDenied()) {
+      return NextResponse.json(
+        { error: "Too Many Requests", reason: decision.reason },
+        { status: 429 }
+      );
+    }
 
     // Get user session from NextAuth
     const session = await getServerSession();

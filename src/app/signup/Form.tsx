@@ -81,6 +81,11 @@ const SignUpForm = () => {
         }),
       });
 
+      if ((await registrationPromise).status === 429) {
+        setErrors({ email: "Too many requests. Please try again later." });
+        return;
+      }
+
       if ((await registrationPromise).status === 401) {
         setErrors({ email: "Email already taken" });
         setLoading(false);

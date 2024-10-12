@@ -6,6 +6,27 @@ import { getServerSession } from "next-auth";
 import { generateCode } from "@/utils/Token";
 import { sendVerificationEmail } from "@/utils/sendEmail";
 import { eq } from "drizzle-orm";
+import arcjet, { detectBot, tokenBucket } from "@arcjet/next";
+
+const aj = arcjet({
+  key: process.env.ARCJET_KEY!, // Get your site key from https://app.arcjet.com
+  characteristics: ["userId"], // track requests by a custom user ID
+  rules: [
+    // Create a token bucket rate limit. Other algorithms are supported.
+    tokenBucket({
+      mode: "LIVE", // will block requests. Use "DRY_RUN" to log only
+      refillRate: 3, // refill 5 tokens per interval
+      interval: 60, // refill every 10 seconds
+      capacity: 6, // bucket maximum capacity of 10 tokens
+    }),
+    detectBot({
+      mode: "LIVE", // will block requests. Use "DRY_RUN" to log only
+      // Block all bots except search engine crawlers. See the full list of bots
+      // for other options: https://arcjet.com/bot-list
+      allow: ["CATEGORY:SEARCH_ENGINE"],
+    }),
+  ],
+});
 
 interface RequestBody {
   name: string;
@@ -19,6 +40,18 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(); // Pass authOptions
   try {
     const body: RequestBody = await req.json();
+
+    const userId = body.email;
+
+    const decision = await aj.protect(req, { userId, requested: 1 }); // Deduct 5 tokens from the bucket
+    console.log("Arcjet decision", decision);
+
+    if (decision.isDenied()) {
+      return NextResponse.json(
+        { error: "Too Many Requests", reason: decision.reason },
+        { status: 429 }
+      );
+    }
 
     // Check if the user already exists
     const registeredUser = await db

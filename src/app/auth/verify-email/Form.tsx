@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoaderCircle } from "lucide-react";
 
@@ -20,21 +20,8 @@ const VerifyEmailForm = ({ email }: VerifyEmailProps) => {
   const [loading, setLoading] = useState<boolean>(false); // Loading state for submit
   const [loadingResend, setLoadingResend] = useState<boolean>(false); // Loading state for resend
   const [message, setMessage] = useState<string>("");
-  const [retryAfter, setRetryAfter] = useState<number | null>(null); // Retry timer state
-  const [timeLeft, setTimeLeft] = useState<number | null>(null); // Time left for retry
 
   const router = useRouter();
-
-  // Function to handle countdown logic
-  useEffect(() => {
-    if (timeLeft === null || timeLeft <= 0) return;
-
-    const intervalId = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime !== null ? prevTime - 1 : 0));
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [timeLeft]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,19 +54,9 @@ const VerifyEmailForm = ({ email }: VerifyEmailProps) => {
         });
 
         const data = await response.json();
-        console.log(response.status);
+        // console.log(response.status);
         if (response.status === 429) {
-          const retryAfterHeader = response.headers.get("Retry-After");
-          const retryInSeconds = retryAfterHeader
-            ? parseInt(retryAfterHeader)
-            : 60; // Default to 60 seconds if no header
-
-          setMessage(
-            `Too many requests. Please try again in  ${timeLeft} seconds.`
-          );
-          setRetryAfter(retryInSeconds);
-          setTimeLeft(retryInSeconds); // Start the countdown
-
+          setMessage("Too many requests. Please try again later.");
           return;
         }
         if (response.ok) {
@@ -88,7 +65,6 @@ const VerifyEmailForm = ({ email }: VerifyEmailProps) => {
             router.push("/signin");
           }, 2000);
         } else {
-          console.log(retryAfter);
           setMessage(data.message || "Email verification failed.");
         }
       } catch (error) {
@@ -121,6 +97,11 @@ const VerifyEmailForm = ({ email }: VerifyEmailProps) => {
       });
 
       const data = await response.json();
+
+      if (response.status === 429) {
+        setMessage("Too many requests. Please try again later.");
+        return;
+      }
 
       if (response.ok) {
         setMessage("Verification email resent successfully!");

@@ -51,8 +51,11 @@ const ForgotPasswordForm: React.FC = () => {
         },
         body: JSON.stringify({ email }),
       });
-      console.log(email);
-
+      // console.log(email);
+      if (res.status === 429) {
+        setMessage("Too many requests. Please try again later.");
+        return;
+      }
       // console.log("Status Code : - " + data.status);
       if (res.status === 200) {
         setMessage("Password reset link sent! Check your email.");
