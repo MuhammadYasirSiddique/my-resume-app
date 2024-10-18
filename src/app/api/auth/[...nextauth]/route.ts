@@ -289,8 +289,8 @@ import { compare } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { sql } from "@vercel/postgres";
 import arcjet, { fixedWindow } from "@arcjet/next";
-import { NextApiRequest, NextApiResponse } from "next";
-import { NextResponse } from "next/server";
+// import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
 // import { withArcjet } from "@arcjet/next";
 // import { ArcjetRule } from "@arcjet/next";
@@ -422,7 +422,7 @@ export const aj = arcjet({
   ],
 });
 
-export async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function handler(req: NextRequest, res: NextResponse) {
   if (req.url?.includes("/auth/callback/credentials")) {
     const decision = await aj.protect(req);
     // console.log(decision);
@@ -433,14 +433,19 @@ export async function handler(req: NextApiRequest, res: NextApiResponse) {
       //   JSON.stringify({ error: "Too many requests. Try again later." }),
       //   { status: 429, headers: { "Content-Type": "application/json" } }
       // );
-      return new NextResponse(null, {
-        status: 429,
-        headers: {
-          "Content-Type": "application/json",
-          "Retry-After": "60", // Optional header for rate-limiting policies
-          Location: "/signin", // Send URL in Location header
-        },
-      });
+      return NextResponse.json(
+        { error: "Too many requests. Try again later." },
+        { status: 429 }
+      );
+
+      // return new NextResponse(null, {
+      //   status: 429,
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "Retry-After": "60", // Optional header for rate-limiting policies
+      //     Location: "/signin", // Send URL in Location header
+      //   },
+      // });
     }
   }
 
