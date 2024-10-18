@@ -289,8 +289,8 @@ import { compare } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { sql } from "@vercel/postgres";
 import arcjet, { fixedWindow } from "@arcjet/next";
-import { NextApiRequest, NextApiResponse } from "next";
-import { NextResponse } from "next/server";
+// import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse, NextRequest } from "next/server";
 
 // import { withArcjet } from "@arcjet/next";
 // import { ArcjetRule } from "@arcjet/next";
@@ -422,7 +422,7 @@ export const aj = arcjet({
   ],
 });
 
-export async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function handler(req: NextRequest, res: NextResponse) {
   if (req.url?.includes("/auth/callback/credentials")) {
     const decision = await aj.protect(req);
     // console.log(decision);
