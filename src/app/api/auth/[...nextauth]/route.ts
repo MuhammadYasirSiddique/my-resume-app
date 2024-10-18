@@ -298,7 +298,7 @@ import { NextResponse } from "next/server";
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   pages: {
-    signIn: "/signin",
+    signIn: "/auth/signin",
     verifyRequest: "/verify-email", // Custom page for email verification
   },
   providers: [
@@ -312,7 +312,7 @@ export const authOptions: NextAuthOptions = {
         },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      authorize: async (credentials) => {
         // Drizzle ORM query to fetch the user by email
         const response = await db
           .select()
@@ -357,7 +357,15 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account }) {
+    async redirect({ url, baseUrl }) {
+      console.log(url);
+      // Ensure the URL is valid or fallback to the baseUrl
+      return url.startsWith(baseUrl) ? url : `${baseUrl}/signin`;
+    },
+    async signIn({ user, account, email, profile, credentials }) {
+      console.log("Email : -  - " + email);
+      console.log("Profile : - -  " + profile);
+      console.log("Credentials :  - - " + credentials);
       if (account?.provider === "google" || account?.provider === "github") {
         try {
           // Check if the user already exists using Drizzle ORM
@@ -420,11 +428,19 @@ export async function handler(req: NextApiRequest, res: NextApiResponse) {
     // console.log(decision);
     console.log("Arcjet decision: = before if: - " + decision.isDenied());
     if (decision.isDenied() || decision.reason.isShield()) {
-      console.log("Arcjet decision: = after if: - " + decision.isDenied());
-      return NextResponse.json(
-        { error: "Too many requests. Try again later." },
-        { status: 429 }
-      );
+      console.log("Arcjet decision: Rate limit hit.");
+      // return new NextResponse(
+      //   JSON.stringify({ error: "Too many requests. Try again later." }),
+      //   { status: 429, headers: { "Content-Type": "application/json" } }
+      // );
+      return new NextResponse(null, {
+        status: 429,
+        headers: {
+          "Content-Type": "application/json",
+          "Retry-After": "60", // Optional header for rate-limiting policies
+          Location: "/signin", // Send URL in Location header
+        },
+      });
     }
   }
 

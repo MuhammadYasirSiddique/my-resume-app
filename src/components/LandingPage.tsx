@@ -17,7 +17,7 @@ const LandingPage: React.FC = () => {
             tool.
           </p>
           <Link
-            href="/dashboard"
+            href="/signup"
             className="inline-block px-6 py-3 bg-white text-blue-600 font-semibold rounded-md shadow hover:bg-gray-100 transition duration-300"
           >
             Get Started <FiArrowRight className="inline ml-2" />

@@ -256,41 +256,63 @@ const SigninForm: React.FC = () => {
     setMessage(null); // Clear previous messages
     const formData = new FormData(e.currentTarget);
 
-    // Perform the sign-in request
-    const res = await signIn("credentials", {
-      redirect: false,
-      email: formData.get("email"),
-      password: formData.get("password"),
-      callbackUrl: "http://localhost:3000/dashboard", // Ensure callback URL is valid
-    });
-    const email = formData.get("email") as string;
+    try {
+      // Perform the sign-in request
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: formData.get("email"),
+        password: formData.get("password"),
+        headers: { "Content-Type": "application/json" },
+        // callbackUrl: `${window.location.origin}/dashboard/`,
+      });
 
-    console.log("Status returned from Server:  - " + res?.status);
+      // console.log(window.location.href);
+      console.log("Response from signIn:", res); // Inspect for any anomalies
 
-    // Check for errors in the response
-    if (res?.error) {
-      if (res.error === "Email not verified.") {
-        // Show a message with "Email not verified" message
-        setMessage("Email not verified. Redirecting to verification page...");
+      const email = formData.get("email") as string;
 
-        // Redirect to the verify-email page
-        router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+      console.log("Status returned from Server:  - " + res?.status);
+
+      if (res?.status === 429) {
+        setMessage("Too many requests. Please try again later.");
         setLoading(false);
         return;
       }
 
-      // For any other errors, show a generic error message
-      setMessage("Failed to sign in. Please check your credentials.");
-      setLoading(false);
-      return;
-    }
+      // Check for errors in the response
+      if (res?.error) {
+        if (res.error === "Email not verified.") {
+          // Show a message with "Email not verified" message
+          setMessage("Email not verified. Redirecting to verification page...");
 
-    // Successful sign-in: Show success message and redirect to dashboard
-    if (res?.status === 200) {
-      setMessage("Signed in successfully!. Redirecting...");
-      setLoading(false);
-      router.push("/dashboard");
+          // Redirect to the verify-email page
+          router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+          setLoading(false);
+          return;
+        }
+
+        // For any other errors, show a generic error message
+        setMessage("Failed to sign in. Please check your credentials.");
+        setLoading(false);
+        return;
+      }
+
+      // Successful sign-in: Show success message and redirect to dashboard
+      if (res?.status === 200) {
+        setMessage("Signed in successfully!. Redirecting...");
+        setLoading(false);
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Error during sign-in:", error);
+      setMessage("An unexpected error occurred. Please try again later.");
+      router.push(
+        `/auth/error?error=${encodeURIComponent("Something went wrong.")}`
+      );
       router.refresh();
+    } finally {
+      setLoading(false);
     }
   };
 
