@@ -277,74 +277,223 @@
 // };
 
 // export { handler as GET, ajProtectedPOST as POST };
-import NextAuth from "next-auth";
-import { NextAuthOptions } from "next-auth";
+// import NextAuth from "next-auth";
+// import { NextAuthOptions } from "next-auth";
+// import { db } from "@/db/index";
+// import GoogleProvider from "next-auth/providers/google";
+// import GithubProvider from "next-auth/providers/github";
+// import CredentialsProvider from "next-auth/providers/credentials";
+// import { users } from "@/db/schema"; // Assuming you have users schema
+
+// import { compare } from "bcryptjs";
+// import { eq } from "drizzle-orm";
+// import { sql } from "@vercel/postgres";
+// import arcjet, { fixedWindow } from "@arcjet/next";
+// // import { NextApiRequest, NextApiResponse } from "next";
+// import { NextResponse, NextRequest } from "next/server";
+
+// // import { withArcjet } from "@arcjet/next";
+// // import { ArcjetRule } from "@arcjet/next";
+
+// export const authOptions: NextAuthOptions = {
+//   session: { strategy: "jwt" },
+//   pages: {
+//     signIn: "/auth/signin",
+//     verifyRequest: "/verify-email", // Custom page for email verification
+//   },
+//   providers: [
+//     CredentialsProvider({
+//       name: "Credentials",
+//       credentials: {
+//         email: {
+//           label: "email",
+//           type: "text",
+//           placeholder: "jsmith@email.com",
+//         },
+//         password: { label: "Password", type: "password" },
+//       },
+//       authorize: async (credentials) => {
+//         // Drizzle ORM query to fetch the user by email
+//         const response = await db
+//           .select()
+//           .from(users)
+//           .where(eq(users.email, credentials?.email || ""));
+
+//         const user = response[0];
+
+//         if (!user) {
+//           throw new Error("User not found.");
+//         }
+
+//         // Check if the email is verified
+//         if (!user.email_verified) {
+//           console.log("Email not verified.");
+//           throw new Error("Email not verified.");
+//         }
+
+//         const passwordMatch = await compare(
+//           credentials?.password || "",
+//           user.password || ""
+//         );
+
+//         if (!passwordMatch) {
+//           throw new Error("Invalid password.");
+//         }
+
+//         return {
+//           id: user.id,
+//           name: user.name,
+//           email: user.email,
+//         };
+//       },
+//     }),
+//     GithubProvider({
+//       clientId: process.env.GITHUB_ID || "",
+//       clientSecret: process.env.GITHUB_SECRET || "",
+//     }),
+//     GoogleProvider({
+//       clientId: process.env.GOOGLE_ID || "",
+//       clientSecret: process.env.GOOGLE_SECRET || "",
+//     }),
+//   ],
+//   callbacks: {
+//     async redirect({ url, baseUrl }) {
+//       console.log(url);
+//       // Ensure the URL is valid or fallback to the baseUrl
+//       return url.startsWith(baseUrl) ? url : `${baseUrl}/signin`;
+//     },
+//     async signIn({ user, account, email, profile, credentials }) {
+//       console.log("Email : -  - " + email);
+//       console.log("Profile : - -  " + profile);
+//       console.log("Credentials :  - - " + credentials);
+//       if (account?.provider === "google" || account?.provider === "github") {
+//         try {
+//           // Check if the user already exists using Drizzle ORM
+//           const existingUser = await db
+//             .select()
+//             .from(users)
+//             .where(eq(users.email, user.email || ""));
+
+//           if (existingUser.length === 0) {
+//             // Insert new user into the database
+//             await sql`INSERT INTO resume_users (
+//                       name, email, oauth_provider, oauth_provider_id, profile_image
+//                       )
+//                       VALUES (
+//                           ${user?.name},
+//                           ${user?.email},
+
+//                           ${account.provider || null},
+//                           ${account.providerAccountId || null},
+//                           ${user?.image || null}
+//                         )
+//                       ;`;
+
+//             console.log("New user added to the database.");
+//           } else {
+//             console.log("User already exists in the database.");
+//           }
+//         } catch (error) {
+//           console.error("Database error:", error);
+//           return false; // Prevent sign-in if there's a database error
+//         }
+//       }
+
+//       return true; // Allow sign-in
+//     },
+//   },
+//   secret: process.env.NEXTAUTH_SECRET,
+// };
+
+// // const handler = NextAuth(authOptions);
+
+// // export { handler as GET, handler as POST };
+
+// export const aj = arcjet({
+//   key: process.env.ARCJET_KEY!,
+//   // Tracking by ip.src is the default if not specified
+//   //characteristics: ["ip.src"],
+//   rules: [
+//     fixedWindow({
+//       mode: "LIVE",
+//       window: "1m",
+//       max: 3,
+//     }),
+//   ],
+// });
+
+// export async function handler(req: NextRequest, res: NextResponse) {
+//   if (req.url?.includes("/auth/callback/credentials")) {
+//     const decision = await aj.protect(req);
+//     // console.log(decision);
+//     console.log("Arcjet decision: = before if: - " + decision.isDenied());
+//     if (decision.isDenied() || decision.reason.isShield()) {
+//       console.log("Arcjet decision: Rate limit hit.");
+//       return new NextResponse(
+//         JSON.stringify({ error: "Too many requests. Try again later." }),
+//         { status: 429, headers: { "Content-Type": "application/json" } }
+//       );
+//       // return new NextResponse(null, {
+//       //   status: 429,
+//       //   headers: {
+//       //     "Content-Type": "application/json",
+//       //     "Retry-After": "60", // Optional header for rate-limiting policies
+//       //     Location: "/signin", // Send URL in Location header
+//       //   },
+//       // });
+//     }
+//   }
+
+//   return NextAuth(authOptions)(req, res); // Continue with NextAuth handler
+// }
+
+// export { handler as GET, handler as POST };
+
+import NextAuth, { NextAuthOptions } from "next-auth";
 import { db } from "@/db/index";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { users } from "@/db/schema"; // Assuming you have users schema
-
+import { users } from "@/db/schema";
 import { compare } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { sql } from "@vercel/postgres";
 import arcjet, { fixedWindow } from "@arcjet/next";
-// import { NextApiRequest, NextApiResponse } from "next";
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-// import { withArcjet } from "@arcjet/next";
-// import { ArcjetRule } from "@arcjet/next";
-
+// Auth options configuration
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   pages: {
     signIn: "/auth/signin",
-    verifyRequest: "/verify-email", // Custom page for email verification
+    error: "/auth/error", // Custom error page
+
+    verifyRequest: "/verify-email",
   },
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: {
-          label: "email",
-          type: "text",
-          placeholder: "jsmith@email.com",
-        },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        // Drizzle ORM query to fetch the user by email
         const response = await db
           .select()
           .from(users)
           .where(eq(users.email, credentials?.email || ""));
-
         const user = response[0];
 
-        if (!user) {
-          throw new Error("User not found.");
-        }
-
-        // Check if the email is verified
-        if (!user.email_verified) {
-          console.log("Email not verified.");
-          throw new Error("Email not verified.");
-        }
+        if (!user) throw new Error("User not found.");
+        if (!user.email_verified) throw new Error("Email not verified.");
 
         const passwordMatch = await compare(
           credentials?.password || "",
           user.password || ""
         );
+        if (!passwordMatch) throw new Error("Invalid password.");
 
-        if (!passwordMatch) {
-          throw new Error("Invalid password.");
-        }
-
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-        };
+        return { id: user.id, name: user.name, email: user.email };
       },
     }),
     GithubProvider({
@@ -357,94 +506,50 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      console.log(url);
-      // Ensure the URL is valid or fallback to the baseUrl
-      return url.startsWith(baseUrl) ? url : `${baseUrl}/signin`;
-    },
-    async signIn({ user, account, email, profile, credentials }) {
-      console.log("Email : -  - " + email);
-      console.log("Profile : - -  " + profile);
-      console.log("Credentials :  - - " + credentials);
+    async signIn({ user, account }) {
       if (account?.provider === "google" || account?.provider === "github") {
-        try {
-          // Check if the user already exists using Drizzle ORM
-          const existingUser = await db
-            .select()
-            .from(users)
-            .where(eq(users.email, user.email || ""));
-
-          if (existingUser.length === 0) {
-            // Insert new user into the database
-            await sql`INSERT INTO resume_users (
-                      name, email, oauth_provider, oauth_provider_id, profile_image
-                      )
-                      VALUES (
-                          ${user?.name},
-                          ${user?.email},
-
-                          ${account.provider || null},
-                          ${account.providerAccountId || null},
-                          ${user?.image || null}
-                        )
-                      ;`;
-
-            console.log("New user added to the database.");
-          } else {
-            console.log("User already exists in the database.");
-          }
-        } catch (error) {
-          console.error("Database error:", error);
-          return false; // Prevent sign-in if there's a database error
+        const existingUser = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, user.email || ""));
+        if (existingUser.length === 0) {
+          await sql`INSERT INTO resume_users (name, email, oauth_provider, oauth_provider_id, profile_image) 
+                    VALUES (${user.name}, ${user.email}, ${account.provider}, ${account.providerAccountId}, ${user.image});`;
         }
       }
-
-      return true; // Allow sign-in
+      return true;
+    },
+    async redirect({ url, baseUrl }) {
+      return url.startsWith(baseUrl) ? url : `${baseUrl}/signin`;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-// const handler = NextAuth(authOptions);
-
-// export { handler as GET, handler as POST };
-
-export const aj = arcjet({
+// Rate limiting configuration
+const aj = arcjet({
   key: process.env.ARCJET_KEY!,
-  // Tracking by ip.src is the default if not specified
-  //characteristics: ["ip.src"],
-  rules: [
-    fixedWindow({
-      mode: "LIVE",
-      window: "1m",
-      max: 3,
-    }),
-  ],
+  rules: [fixedWindow({ mode: "LIVE", window: "1m", max: 3 })],
 });
 
-export async function handler(req: NextRequest, res: NextResponse) {
-  if (req.url?.includes("/auth/callback/credentials")) {
+// Next.js route handler
+async function POST(req: Request) {
+  const url = req.url || "";
+
+  if (url.includes("/auth/callback/credentials")) {
     const decision = await aj.protect(req);
-    // console.log(decision);
-    console.log("Arcjet decision: = before if: - " + decision.isDenied());
-    if (decision.isDenied() || decision.reason.isShield()) {
-      console.log("Arcjet decision: Rate limit hit.");
-      return new NextResponse(
-        JSON.stringify({ error: "Too many requests. Try again later." }),
-        { status: 429, headers: { "Content-Type": "application/json" } }
+    if (decision.isDenied()) {
+      return NextResponse.json(
+        { error: "Too many requests. Try again later." },
+        { status: 429 }
       );
-      // return new NextResponse(null, {
-      //   status: 429,
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     "Retry-After": "60", // Optional header for rate-limiting policies
-      //     Location: "/signin", // Send URL in Location header
-      //   },
-      // });
     }
   }
 
-  return NextAuth(authOptions)(req, res); // Continue with NextAuth handler
+  // Continue with NextAuth
+  const response = await NextAuth(authOptions)(req);
+  return response;
 }
 
-export { handler as GET, handler as POST };
+// Exporting handler functions for GET and POST
+export { POST as GET, POST as POST };
