@@ -429,18 +429,18 @@ export async function handler(req: NextRequest, res: NextResponse) {
     console.log("Arcjet decision: = before if: - " + decision.isDenied());
     if (decision.isDenied() || decision.reason.isShield()) {
       console.log("Arcjet decision: Rate limit hit.");
-      // return new NextResponse(
-      //   JSON.stringify({ error: "Too many requests. Try again later." }),
-      //   { status: 429, headers: { "Content-Type": "application/json" } }
-      // );
-      return new NextResponse(null, {
-        status: 429,
-        headers: {
-          "Content-Type": "application/json",
-          "Retry-After": "60", // Optional header for rate-limiting policies
-          Location: "/signin", // Send URL in Location header
-        },
-      });
+      return new NextResponse(
+        JSON.stringify({ error: "Too many requests. Try again later." }),
+        { status: 429, headers: { "Content-Type": "application/json" } }
+      );
+      // return new NextResponse(null, {
+      //   status: 429,
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "Retry-After": "60", // Optional header for rate-limiting policies
+      //     Location: "/signin", // Send URL in Location header
+      //   },
+      // });
     }
   }
 
