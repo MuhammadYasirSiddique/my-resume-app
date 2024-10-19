@@ -43,10 +43,8 @@ export async function POST(req: NextRequest) {
 
     // Validate request
     if (!password || !userid || !token) {
-      return NextResponse.json(
-        { error: "Missing parameters" },
-        { status: 400 }
-      );
+      console.log("Missing parameters");
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
     }
 
     // Verify token
@@ -54,20 +52,18 @@ export async function POST(req: NextRequest) {
 
     // Handle token verification result
     if (tokenStatus === "invalid") {
-      return NextResponse.json(
-        { error: "Invalid token or user ID" },
-        { status: 401 }
-      );
+      console.log("Invalid token or user ID");
+      return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
     } else if (tokenStatus === "expired") {
-      return NextResponse.json({ error: "Token has expired" }, { status: 401 });
+      console.log("Token has expired");
+      return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
     } else if (tokenStatus === "used") {
-      return NextResponse.json(
-        { error: "Token is already used" },
-        { status: 401 }
-      );
+      console.log("Token is already used");
+      return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
     } else if (tokenStatus === "error") {
+      console.log("Error verifying token");
       return NextResponse.json(
-        { error: "Error verifying token" },
+        { error: "INternal Server Error" },
         { status: 500 }
       );
     }

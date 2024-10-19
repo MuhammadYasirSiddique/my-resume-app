@@ -42,10 +42,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     // Validate that the email was passed
     if (!email) {
-      return NextResponse.json(
-        { message: "Email is required." },
-        { status: 400 }
-      );
+      console.log("Email is required.");
+      return NextResponse.json({ message: "Bad Request " }, { status: 400 });
     }
 
     const user = await db.select().from(users).where(eq(users.email, email));

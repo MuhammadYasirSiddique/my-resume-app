@@ -14,7 +14,6 @@ const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error", // Custom error page
-
     verifyRequest: "/verify-email",
   },
   providers: [
@@ -31,14 +30,23 @@ const authOptions: NextAuthOptions = {
           .where(eq(users.email, credentials?.email || ""));
         const user = response[0];
 
-        if (!user) throw new Error("User not found.");
-        if (!user.email_verified) throw new Error("Email not verified.");
+        if (!user) {
+          console.log("User not Found");
+          throw new Error("User not found.");
+        }
+        if (!user.email_verified) {
+          console.log("Email not Verified");
+          throw new Error("Email not verified.");
+        }
 
         const passwordMatch = await compare(
           credentials?.password || "",
           user.password || ""
         );
-        if (!passwordMatch) throw new Error("Invalid password.");
+        if (!passwordMatch) {
+          console.log("Invalid Password");
+          throw new Error("Invalid Credentials.");
+        }
 
         return { id: user.id, name: user.name, email: user.email };
       },

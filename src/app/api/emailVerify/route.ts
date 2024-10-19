@@ -11,9 +11,9 @@ const aj = arcjet({
     // Create a token bucket rate limit. Other algorithms are supported.
     tokenBucket({
       mode: "LIVE", // will block requests. Use "DRY_RUN" to log only
-      refillRate: 3, // refill 5 tokens per interval
+      refillRate: 2, // refill 5 tokens per interval
       interval: 60, // refill every 10 seconds
-      capacity: 6, // bucket maximum capacity of 10 tokens
+      capacity: 5, // bucket maximum capacity of 10 tokens
     }),
     detectBot({
       mode: "LIVE", // will block requests. Use "DRY_RUN" to log only
@@ -41,10 +41,8 @@ export async function POST(req: Request) {
 
     // Check if both email and token are provided
     if (!email || !token) {
-      return NextResponse.json(
-        { message: "Email or token is missing" },
-        { status: 400 }
-      );
+      console.log("Email or token is missing");
+      return NextResponse.json({ message: "Bad Request" }, { status: 400 });
     }
 
     // Query the database to find the user with the provided email and token
@@ -56,10 +54,9 @@ export async function POST(req: Request) {
 
     // If user is not found or token doesn't match
     if (user.length === 0) {
-      return NextResponse.json(
-        { message: "Token invalid or expired" },
-        { status: 400 }
-      );
+      console.log("Token invalid or expired");
+
+      return NextResponse.json({ message: "Bad Request" }, { status: 400 });
     }
 
     // If the user is found, update the `email_verified` status and reset the token
