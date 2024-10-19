@@ -3,7 +3,6 @@ import { signIn } from "next-auth/react";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import toast, { Toaster } from "react-hot-toast";
 import Link from "next/link";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 
@@ -20,86 +19,83 @@ const SigninForm: React.FC = () => {
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string | null>(null); // New message state
+  const router = useRouter();
+
   // Handle input changes for email/password
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const router = useRouter();
-
   // Handle email sign-in submission
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setMessage(null); // Clear previous messages
     const formData = new FormData(e.currentTarget);
 
-    // Perform the sign-in request
-    const res = await signIn("credentials", {
-      redirect: false,
-      email: formData.get("email"),
-      password: formData.get("password"),
-    });
-    const email = formData.get("email") as string;
+    try {
+      // Perform the sign-in request
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: formData.get("email"),
+        password: formData.get("password"),
+        headers: { "Content-Type": "application/json" },
+        // callbackUrl: `${window.location.origin}/dashboard/`,
+      });
 
-    // Check for errors in the response
-    if (res?.error) {
-      if (res.error === "Email not verified.") {
-        // Show a toast with "Email not verified" message
-        toast.error("Email not verified. Redirecting to verification page...", {
-          duration: 3000,
-          style: {
-            fontSize: "16px",
-            borderRadius: "10px",
-            padding: "16px",
-            backgroundColor: "#f87171", // Red background for error
-            color: "#fff",
-          },
-        });
+      // console.log(window.location.href);
+      console.log("Response from signIn:", res); // Inspect for any anomalies
 
-        // Redirect to the verify-email page
-        router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+      const email = formData.get("email") as string;
+
+      console.log("Status returned from Server:  - " + res?.status);
+
+      if (res?.status === 429) {
+        setMessage("Too many requests. Please try again later.");
         setLoading(false);
         return;
       }
 
-      // For any other errors, show a generic error toast
-      toast.error("Failed to sign in. Please check your credentials.", {
-        duration: 2000,
-        style: {
-          fontSize: "16px",
-          borderRadius: "10px",
-          padding: "16px",
-          backgroundColor: "#f87171",
-          color: "#fff",
-        },
-      });
-      setLoading(false);
-      return;
-    }
+      // Check for errors in the response
+      if (res?.error) {
+        if (res.error === "Email not verified.") {
+          // Show a message with "Email not verified" message
+          setMessage("Email not verified. Redirecting to verification page...");
 
-    // Successful sign-in: Show success toast and redirect to dashboard
-    if (res?.status === 200) {
-      toast.success("Signed in successfully!", {
-        duration: 2000,
-        style: {
-          fontSize: "16px",
-          borderRadius: "10px",
-          padding: "16px",
-          backgroundColor: "#1f2937",
-          color: "#fff",
-        },
-      });
-      setLoading(false);
-      router.push("/dashboard");
+          // Redirect to the verify-email page
+          router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+          setLoading(false);
+          return;
+        }
+
+        // For any other errors, show a generic error message
+        setMessage("Failed to sign in. Please check your credentials.");
+        setLoading(false);
+        return;
+      }
+
+      // Successful sign-in: Show success message and redirect to dashboard
+      if (res?.status === 200) {
+        setMessage("Signed in successfully!. Redirecting...");
+        setLoading(false);
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Error during sign-in:", error);
+      setMessage("An unexpected error occurred. Please try again later.");
+      router.push(
+        `/auth/error?error=${encodeURIComponent("Something went wrong.")}`
+      );
       router.refresh();
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-50">
-      {/* Render toast notifications */}
-      <Toaster position="top-right" reverseOrder={false} />
-
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <h2 className="mt-6 text-lg sm:text-2xl font-bold text-gray-900">
@@ -170,10 +166,27 @@ const SigninForm: React.FC = () => {
               <span className="text-indigo-600"> Forget Password</span>
             </Link>
           </div>
+
+          {/* Display message if exists */}
+          {/* {message && (
+            <div
+              className="
+           bg-red-100 
+          text-red-700 p-4 rounded-md text-center"
+            >
+              {message}
+            </div>
+          )} */}
+          {message && (
+            <div className="text-red-700 mt-2 text-sm text-center">
+              {message}
+            </div>
+          )}
+
           <button
             type="submit"
             className={`w-full px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300
-            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}  `}
+            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}`}
             disabled={loading}
           >
             {loading ? (
@@ -189,7 +202,7 @@ const SigninForm: React.FC = () => {
           onClick={() => signIn("google")}
           className={`w-full flex justify-center items-center px-4 py-2 mt-4 bg-white text-black 
             font-semibold rounded-md shadow hover:bg-gray-100 gap-2 sm:gap-4
-            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}  `}
+            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}`}
           disabled={loading}
         >
           <div>
@@ -203,7 +216,7 @@ const SigninForm: React.FC = () => {
           onClick={() => signIn("github")}
           className={`w-full flex justify-center items-center px-4 py-2 mt-4 bg-gray-600 text-white 
             font-semibold rounded-md shadow hover:bg-gray-700 gap-2 sm:gap-4
-            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}  `}
+            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}`}
           disabled={loading}
         >
           <div>
