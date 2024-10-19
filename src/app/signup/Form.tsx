@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 
@@ -19,7 +19,16 @@ interface FormData {
   confirmPassword: string;
 }
 
-const SignUpForm = () => {
+interface SignUpFormProps {
+  token: string; // Token passed from the server component
+}
+const SignUpForm = ({ token }: SignUpFormProps) => {
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("authToken", token);
+    }
+  }, [token]);
+
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -74,6 +83,7 @@ const SignUpForm = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: token,
         },
         body: JSON.stringify({
           name,
@@ -82,12 +92,20 @@ const SignUpForm = () => {
         }),
       });
 
-      if ((await registrationPromise).status === 429) {
+      const registrationResponse = await registrationPromise; // Await once
+      const data = await registrationResponse.json(); // Parse JSON once
+      console.log(data);
+
+      if (registrationResponse.status === 429) {
         setErrors({ email: "Too many requests. Please try again later." });
         return;
       }
+      if (registrationResponse.status === 440) {
+        setErrors({ email: "Session Expired." });
+        return;
+      }
 
-      if ((await registrationPromise).status === 401) {
+      if (registrationResponse.status === 401) {
         setErrors({ email: "Email already taken" });
         setLoading(false);
         return;

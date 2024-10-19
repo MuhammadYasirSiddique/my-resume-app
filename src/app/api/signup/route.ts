@@ -7,6 +7,8 @@ import { generateCode } from "@/utils/Token";
 import { sendVerificationEmail } from "@/utils/sendEmail";
 import { eq } from "drizzle-orm";
 import arcjet, { detectBot, tokenBucket } from "@arcjet/next";
+import { getToken } from "@/lib/sessionCache"; // Import session cache helpers
+import { headers } from "next/headers";
 
 const aj = arcjet({
   key: process.env.ARCJET_KEY!, // Get your site key from https://app.arcjet.com
@@ -40,11 +42,35 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(); // Pass authOptions
   try {
     const body: RequestBody = await req.json();
-
     const userId = body.email;
 
+    const headersList = headers();
+    const ip =
+      headersList.get("x-forwarded-for")?.split(",")[0] || "unknown-ip";
+    const reqHeaderToken = req.headers.get("Authorization");
+    const currentTime = Math.floor(Date.now()); // Current time in seconds
+    const sessionData = getToken(ip); // Get the session data
+
+    if (!sessionData) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    const { token: cachedToken, expirationTime } = sessionData;
+
+    if (expirationTime < currentTime) {
+      console.log("JWT Expired");
+      return NextResponse.json({ error: "Session expired." }, { status: 440 });
+    }
+
+    if (cachedToken !== reqHeaderToken) {
+      return NextResponse.json(
+        { error: "Invalid Credentials." },
+        { status: 403 }
+      );
+    }
+
     const decision = await aj.protect(req, { userId, requested: 1 }); // Deduct 5 tokens from the bucket
-    console.log("Arcjet decision", decision);
+    // console.log("Arcjet decision", decision);
 
     if (decision.isDenied()) {
       return NextResponse.json(
@@ -64,7 +90,7 @@ export async function POST(req: NextRequest) {
       console.log("Email: - " + user.email, " already taken");
       return NextResponse.json(
         { message: "User already exists" },
-        { status: 401 }
+        { status: 409 }
       );
     }
 
