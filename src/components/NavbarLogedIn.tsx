@@ -44,7 +44,7 @@ function NavbarLogin() {
   // Function to handle sign out with react-hot-toast
   const handleSignOut = () => {
     toast.promise(
-      signOut({ redirect: true }).then(() => {
+      signOut({ redirect: true, callbackUrl: "/" }).then(() => {
         setMenuVisible(false);
         setMobileMenuVisible(false);
       }),

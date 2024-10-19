@@ -9,6 +9,7 @@ import Link from "next/link";
 import { signupSchema } from "@/zod/signupSchema";
 
 import { Eye, EyeOff, LoaderCircle } from "lucide-react"; // Importing icons from lucide-react
+import toast, { Toaster } from "react-hot-toast";
 
 // Define TypeScript interface for form data
 interface FormData {
@@ -93,7 +94,7 @@ const SignUpForm = () => {
       }
 
       await registrationPromise;
-
+      toast.success("Registration Successful. Redirectiing...");
       router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
       router.refresh();
     } catch (error) {
@@ -105,6 +106,7 @@ const SignUpForm = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-8 sm:px-6 lg:px-8">
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-xl">
         <h2 className="mt-6 text-center text-2xl font-extrabold text-gray-900">
           Create your account
