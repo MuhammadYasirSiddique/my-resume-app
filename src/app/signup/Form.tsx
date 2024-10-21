@@ -79,45 +79,69 @@ const SignUpForm = ({ token }: SignUpFormProps) => {
     }
 
     try {
-      const registrationPromise = fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      });
-
-      const registrationResponse = await registrationPromise; // Await once
-      const data = await registrationResponse.json(); // Parse JSON once
-      console.log(data);
-
-      if (registrationResponse.status === 429) {
-        setErrors({ email: "Too many requests. Please try again later." });
-        return;
-      }
-      if (registrationResponse.status === 440) {
-        setErrors({ email: "Session Expired." });
-        return;
-      }
-
-      if (registrationResponse.status === 401) {
-        setErrors({ email: "Email already taken" });
+      let authToken = token;
+      try {
+        if (!authToken) {
+          authToken = localStorage.getItem("authToken") || "";
+          if (!authToken) {
+            toast.error("Not Authenticatedd.");
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (tokenError) {
+        console.error("Token retrieval error:", tokenError);
+        toast.error("Failed to retrieve token.");
         setLoading(false);
         return;
       }
 
-      await registrationPromise;
-      toast.success("Registration Successful. Redirectiing...");
-      router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
-      router.refresh();
+      try {
+        const registrationPromise = fetch("/api/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+          }),
+        });
+
+        const registrationResponse = await registrationPromise; // Await once
+        const data = await registrationResponse.json(); // Parse JSON once
+        console.log(data);
+
+        if (registrationResponse.status === 429) {
+          setErrors({ email: "Too many requests. Please try again later." });
+          return;
+        }
+        if (registrationResponse.status === 440) {
+          setErrors({ email: "Session Expired." });
+          return;
+        }
+
+        if (registrationResponse.status === 401) {
+          setErrors({ email: "Email already taken" });
+          setLoading(false);
+          return;
+        } else {
+          await registrationPromise;
+          toast.success("Registration Successful. Redirectiing...");
+          router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+          router.refresh();
+        }
+      } catch (apiError) {
+        console.error("API error:", apiError);
+        toast.error("Registration failed. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     } catch (error) {
-      console.error(error);
-    } finally {
+      console.error("Unexpected error:", error);
+      toast.error("An unexpected error occurred. Please try again later.");
       setLoading(false);
     }
   };
