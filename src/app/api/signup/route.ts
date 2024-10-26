@@ -181,6 +181,7 @@ interface RequestBody {
   password?: string; // Optional for OAuth signups
   oauthProvider?: string; // Optional OAuth provider name
   oauthProviderId?: string; // Optional OAuth provider ID
+  reCaptchaToken: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -189,8 +190,37 @@ export async function POST(req: NextRequest) {
   try {
     const body: RequestBody = await req.json();
     const userId = body.email;
+    const { reCaptchaToken } = body;
+    const secretKey = process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY;
+    try {
+      const reCpatchaVerficationResponse = await fetch(
+        `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${reCaptchaToken}`,
+        {
+          method: "POST",
+        }
+      );
+      const reCpatchaVerfication = await reCpatchaVerficationResponse.json();
+      if (reCpatchaVerfication.success) {
+        console.log(
+          "ReCaptcha found., with score: - " + reCpatchaVerfication.score
+        );
+      } else {
+        console.log("No Recaptcha");
+        return NextResponse.json(
+          { message: "Invalid reCaptcha Token" },
+          { status: 400 }
+        );
+      }
+    } catch {
+      console.log("No Recaptcha");
+      return NextResponse.json(
+        { message: "Invalid reCaptcha Token" },
+        { status: 400 }
+      );
+    }
 
     // --- Rate Limit Check ---
+
     try {
       const decision = await aj.protect(req, { userId, requested: 1 });
       if (decision.isDenied()) {
@@ -284,7 +314,7 @@ export async function POST(req: NextRequest) {
           verification_token: verificationToken,
         })
         .returning();
-
+      console.log(newUser);
       // --- Email Sending ---
       try {
         await sendVerificationEmail(body.email, verificationToken);
@@ -299,7 +329,7 @@ export async function POST(req: NextRequest) {
       // Respond with success if everything went fine
       return NextResponse.json({
         message: "User registered. Check your email for verification.",
-        data: newUser,
+        // data: newUser,
       });
     } catch (dbError) {
       console.error("Database error:", dbError);

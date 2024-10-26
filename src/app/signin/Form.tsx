@@ -243,7 +243,6 @@ const SigninForm: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string | null>(null); // New message state
   const router = useRouter();
-
   // Handle input changes for email/password
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

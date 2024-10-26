@@ -5,6 +5,7 @@ import Navbar from "@/components/NavbarSignedOut";
 import SessionWrapper from "@/components/SessionWrapper";
 import { getServerSession } from "next-auth";
 import NavbarLogin from "@/components/NavbarLogedIn";
+import ReCaptchaProvider from "@/components/ReCaptachaProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,16 +30,18 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession();
   // console.log("Server Session" + session);
+
   return (
     <html lang="en">
       <SessionWrapper>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <nav>{!!session && <NavbarLogin />}</nav>
-          <nav>{!session && <Navbar />} </nav>
-
-          {children}
+          <ReCaptchaProvider>
+            <nav>{!!session && <NavbarLogin />}</nav>
+            <nav>{!session && <Navbar />} </nav>
+            {children}
+          </ReCaptchaProvider>
         </body>
       </SessionWrapper>
     </html>
