@@ -1150,17 +1150,17 @@ const SignUpForm = ({ token }: SignUpFormProps) => {
         },
         body: JSON.stringify({ name, email, password, reCaptchaToken }),
       });
-
-      if (registrationResponse.status === 429) {
+      if (registrationResponse.status === 400) {
+        toast.error("ReCaptcha Error");
+        return;
+      } else if (registrationResponse.status === 403) {
+        toast.error("Session Error");
+        return;
+      } else if (registrationResponse.status === 429) {
         setErrors({ email: "Too many requests. Please try again later." });
         return;
-      }
-      if (registrationResponse.status === 440) {
-        setErrors({ email: "Session Expired." });
-        return;
-      }
-      if (registrationResponse.status === 401) {
-        setErrors({ email: "Email already taken" });
+      } else if (registrationResponse.status === 409) {
+        setErrors({ email: "use already exist." });
         setLoading(false);
         return;
       } else {

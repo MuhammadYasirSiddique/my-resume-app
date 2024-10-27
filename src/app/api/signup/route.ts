@@ -417,26 +417,26 @@ export async function POST(req: NextRequest) {
         const reqHeaderToken = req.headers.get("Authorization");
         const currentTime = Math.floor(Date.now() / 1000) - 6000;
         const sessionData = getToken(ip);
+        console.log("Session Data: ---" + sessionData);
 
         if (!sessionData) {
-          return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+          return NextResponse.json({ error: "No Session." }, { status: 403 });
         }
-
         const { token: cachedToken, expirationTime } = sessionData;
 
-        if (expirationTime < currentTime) {
+        if (expirationTime < currentTime || cachedToken !== reqHeaderToken) {
           return NextResponse.json(
-            { error: "Session expired." },
-            { status: 440 }
-          );
-        }
-
-        if (cachedToken !== reqHeaderToken) {
-          return NextResponse.json(
-            { error: "Invalid Credentials." },
+            { error: "Session expired or Invalid." },
             { status: 403 }
           );
         }
+
+        // if (cachedToken !== reqHeaderToken) {
+        //   return NextResponse.json(
+        //     { error: "Invalid Credentials." },
+        //     { status: 403 }
+        //   );
+        // }
 
         // Rate limiting
         try {
