@@ -227,12 +227,18 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
+import { Great_Vibes, Montserrat } from "@next/font/google";
+
+const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400" });
+const montserrat = Montserrat({ subsets: ["latin"], weight: "300" });
 
 // TypeScript interface for email sign-in form data
 interface SignInFormData {
   email: string;
   password: string;
 }
+
+// Set up font styles outside the component
 
 const SigninForm: React.FC = () => {
   const [formData, setFormData] = useState<SignInFormData>({
@@ -243,6 +249,7 @@ const SigninForm: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string | null>(null); // New message state
   const router = useRouter();
+
   // Handle input changes for email/password
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -316,80 +323,81 @@ const SigninForm: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-50">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="mt-6 text-lg sm:text-2xl font-bold text-gray-900">
-            Sign in to your account
-          </h2>
-        </div>
-
-        {/* Email Sign-in Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
+    <div className="flex min-h-screen">
+      <div className="flex flex-col w-1/2 items-center justify-center min-h-screen py-2 bg-gray-50">
+        <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+          <div className="text-center">
+            <h2 className="mt-6 text-lg sm:text-2xl font-bold text-gray-900">
+              Sign in to your account
+            </h2>
           </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <div className="relative mt-1">
+          {/* Email Sign-in Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email
+              </label>
               <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                id="password"
-                placeholder="Enter your password"
-                value={formData.password}
+                type="email"
+                name="email"
+                id="email"
+                placeholder="Enter your email"
+                value={formData.email}
                 onChange={handleChange}
                 required
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
-              <button
-                type="button"
-                className="absolute inset-y-0 right-3 text-gray-500 hover:text-gray-700 focus:outline-none"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
-              </button>
             </div>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span>
-              Do not have an account?
-              <Link href="/signup">
-                <span className="text-indigo-600"> Register here.</span>
-              </Link>
-            </span>
-            <Link href="/auth/forgot-password">
-              <span className="text-indigo-600"> Forget Password</span>
-            </Link>
-          </div>
 
-          {/* Display message if exists */}
-          {/* {message && (
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <div className="relative mt-1">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  id="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-3 text-gray-500 hover:text-gray-700 focus:outline-none"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>
+                Do not have an account?
+                <Link href="/signup">
+                  <span className="text-indigo-600"> Register here.</span>
+                </Link>
+              </span>
+              <Link href="/auth/forgot-password">
+                <span className="text-indigo-600"> Forget Password</span>
+              </Link>
+            </div>
+
+            {/* Display message if exists */}
+            {/* {message && (
             <div
               className="
            bg-red-100 
@@ -398,53 +406,101 @@ const SigninForm: React.FC = () => {
               {message}
             </div>
           )} */}
-          {message && (
-            <div className="text-red-700 mt-2 text-sm text-center">
-              {message}
-            </div>
-          )}
+            {message && (
+              <div className="text-red-700 mt-2 text-sm text-center">
+                {message}
+              </div>
+            )}
 
+            <button
+              type="submit"
+              className={`w-full px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300
+            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}`}
+              disabled={loading}
+            >
+              {loading ? (
+                <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
+              ) : (
+                "Sign in"
+              )}
+            </button>
+          </form>
+
+          {/* Sign in with Google */}
           <button
-            type="submit"
-            className={`w-full px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300
+            onClick={() => signIn("google")}
+            className={`w-full flex justify-center items-center px-4 py-2 mt-4 bg-white text-black 
+            font-semibold rounded-md shadow hover:bg-gray-100 gap-2 sm:gap-4
             ${loading ? "bg-gray-400 cursor-not-allowed" : ""}`}
             disabled={loading}
           >
-            {loading ? (
-              <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
-            ) : (
-              "Sign in"
-            )}
+            <div>
+              <Image
+                src="/google.png"
+                height={20}
+                width={20}
+                alt="Google Logo"
+              />
+            </div>
+            <div>Sign in with Google</div>
           </button>
-        </form>
 
-        {/* Sign in with Google */}
-        <button
-          onClick={() => signIn("google")}
-          className={`w-full flex justify-center items-center px-4 py-2 mt-4 bg-white text-black 
-            font-semibold rounded-md shadow hover:bg-gray-100 gap-2 sm:gap-4
-            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}`}
-          disabled={loading}
-        >
-          <div>
-            <Image src="/google.png" height={20} width={20} alt="Google Logo" />
-          </div>
-          <div>Sign in with Google</div>
-        </button>
-
-        {/* Sign in with GitHub */}
-        <button
-          onClick={() => signIn("github")}
-          className={`w-full flex justify-center items-center px-4 py-2 mt-4 bg-gray-600 text-white 
+          {/* Sign in with GitHub */}
+          <button
+            onClick={() => signIn("github")}
+            className={`w-full flex justify-center items-center px-4 py-2 mt-4 bg-gray-600 text-white 
             font-semibold rounded-md shadow hover:bg-gray-700 gap-2 sm:gap-4
             ${loading ? "bg-gray-400 cursor-not-allowed" : ""}`}
-          disabled={loading}
-        >
-          <div>
-            <Image src="/github.png" height={20} width={20} alt="GitHub Logo" />
+            disabled={loading}
+          >
+            <div>
+              <Image
+                src="/github.png"
+                height={20}
+                width={20}
+                alt="GitHub Logo"
+              />
+            </div>
+            <div>Sign in with GitHub</div>
+          </button>
+        </div>
+      </div>
+
+      {/* Rigjt Section with Logo and Slogan */}
+      <div className="flex items-center w-1/2 justify-center min-h-screen bg-blue-100">
+        <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 relative rounded-lg shadow-lg overflow-hidden p-4">
+          {/* Circle Gradient at Bottom Right */}
+          <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-br from-white to-blue-400 opacity-60 rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
+          <div className="absolute bottom-0 right-0 w-3/4 h-3/4 bg-gradient-to-br from-white to-blue-400 opacity-60 rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
+
+          {/* Smaller Circle Gradient at Top Left */}
+          <div className="absolute top-0 left-0 w-48 h-48 bg-gradient-to-br from-white to-blue-400 opacity-100 rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black">
+            <Image
+              src="/AFLogo.png" // Replace with the path to your logo
+              width={150}
+              height={150}
+              alt="Logo"
+              className="mt-4 mx-auto opacity-100"
+            />
+            <div className="absolute top-0 right-0 w-10 h-10 bg-gradient-to-br from-white to-blue-400 rounded-full transform -translate-x-1/4   translate-y-1/4 shadow-xl shadow-black"></div>
           </div>
-          <div>Sign in with GitHub</div>
-        </button>
+
+          {/* Additional Circle on Top Right */}
+          <div className="absolute top-0 right-0 w-10 h-10 bg-gradient-to-br from-white to-blue-400 opacity-60 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
+
+          {/* Semi-transparent overlay */}
+          <div className="absolute inset-0 bg-blue-100 opacity-20" />
+
+          {/* Content */}
+          <div className="text-center text-black z-10">
+            <h1 className={`${greatVibes.className} text-6xl font-bold mb-4`}>
+              My Resume
+            </h1>
+            <p className={`${montserrat.className} text-lg italic`}>
+              Design. Disseminate. Dominate.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

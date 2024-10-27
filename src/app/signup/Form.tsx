@@ -1034,7 +1034,10 @@ import { signupSchema } from "@/zod/signupSchema";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react"; // Importing icons from lucide-react
 import toast, { Toaster } from "react-hot-toast";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import { Great_Vibes, Montserrat } from "@next/font/google";
 
+const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400" });
+const montserrat = Montserrat({ subsets: ["latin"], weight: "300" });
 // Define TypeScript interface for form data
 interface FormData {
   name: string;
@@ -1176,36 +1179,40 @@ const SignUpForm = ({ token }: SignUpFormProps) => {
   return (
     <div className="flex min-h-screen">
       {/* Left Section with Logo and Slogan */}
-      <div className="flex items-center w-1/2 justify-center min-h-screen bg-blue-100">
-        <div className=" flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-400 to-blue-500 relative rounded-lg shadow-lg overflow-hidden p-4">
+      <div className="flex items-center w-1/2 justify-center min-h-screen bg-blue-00">
+        <div className=" flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 relative rounded-lg shadow-lg overflow-hidden p-4">
           {/* Circle Gradient at Bottom Left */}
           <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-br from-white to-blue-400 opacity-60 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
           <div className="absolute bottom-0 left-0 w-3/4 h-3/4 bg-gradient-to-br from-white to-blue-400 opacity-60 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
-          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-white to-blue-400 opacity-60 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-white to-yellow-400 opacity-100 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black">
             {" "}
+            <Image
+              src="/AFLogo.png" // Replace with the path to your logo
+              width={150}
+              height={150}
+              alt="Logo"
+              className="mt-4 mx-auto opacity-100"
+            />
             <div className="absolute top-0 left-0 w-10 h-10 bg-gradient-to-br from-white to-blue-400  rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
           </div>
-          <div className="absolute top-0 left-0 w-10 h-10 bg-gradient-to-br from-white to-blue-400 opacity-60 rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
+          <div className="absolute top-0 left-0 w-10 h-10 bg-gradient-to-br from-white to-red-400 opacity-60 rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
           {/* Semi-transparent overlay */}
           <div className="absolute inset-0 bg-blue-100 opacity-20" />
 
           {/* Content */}
           <div className="text-center text-slate-800 z-10">
-            <Image
-              src="/AFLogo.png" // Replace with the path to your logo
-              width={250}
-              height={250}
-              alt="Logo"
-              className="mb-6 mx-auto"
-            />
-            <h1 className=" text-6xl font-bold mb-4">My Resume</h1>
-            <p className="text-lg">Design. Disseminate. Dominate.</p>
+            <h1 className={`${greatVibes.className} text-6xl font-bold mb-4`}>
+              My Resume
+            </h1>
+            <p className={`${montserrat.className} text-lg italic`}>
+              Design. Disseminate. Dominate.{" "}
+            </p>
           </div>
         </div>
       </div>
 
       {/* Right Section with Sign-up Form */}
-      <div className="w-1/2 flex flex-col items-center justify-center bg-white p-12">
+      <div className="flex flex-col w-1/2 items-center justify-center min-h-screen py-2 bg-gray-50">
         <Toaster position="top-center" reverseOrder={false} />
         <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-2xl">
           <h2 className="text-center text-3xl font-bold text-gray-900">

@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import React from "react";
 import SignUpForm from "./Form"; // Client Component
 import { headers } from "next/headers"; // To access request headers
-import ReCaptchaProvider from "@/components/ReCaptachaProvider";
+
 
 // Helper function to generate JWT based on IP
 const generateJWT = (ip: string) => {
@@ -35,10 +35,9 @@ export default async function Signup() {
 
   return (
     <div>
-      <ReCaptchaProvider>
         {/* Pass the token as a prop to the client-side form */}
         <SignUpForm token={token} />
-      </ReCaptchaProvider>
+      
     </div>
   );
 }
