@@ -392,7 +392,7 @@ export async function POST(req: NextRequest) {
     const body: RequestBody = await req.json();
     const userId = body.email;
     const { reCaptchaToken } = body;
-    const secretKey = process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY;
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
 
     // reCaptcha validation
     try {
