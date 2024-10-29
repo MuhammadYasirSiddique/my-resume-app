@@ -25,7 +25,8 @@ export async function createToken(
   const expiresAt = addMinutes(new Date(), 15);
 
   // Insert into API_tokens table
-  const tokenInserted = await db.insert(api_tokens).values({
+  // const tokenInserted =
+  await db.insert(api_tokens).values({
     apikeyId,
     userIp,
     apiKey: token,
@@ -33,7 +34,7 @@ export async function createToken(
     expiresAt,
     reqPage, // Add reqPage here
   });
-  console.log(tokenInserted);
+  // console.log(tokenInserted);
   return token;
 }
 

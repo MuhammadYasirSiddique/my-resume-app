@@ -8,7 +8,6 @@ import { v4 as uuidv4 } from "uuid";
 
 export default async function Signup() {
   const session = await getServerSession();
-
   // If user is already logged in, redirect to dashboard
   if (session) {
     redirect("/dashboard");

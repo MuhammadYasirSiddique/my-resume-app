@@ -73,78 +73,82 @@ const SignUpForm = ({ token }: { token: string }) => {
         setLoading(false);
         return;
       }
+
+      // ReCAPTCHA Execution
+      let reCaptchaToken = "";
+      try {
+        if (!executeRecaptcha) {
+          toast.error("reCAPTCHA not available");
+          setLoading(false);
+          return;
+        }
+        reCaptchaToken = await executeRecaptcha("form_submit");
+
+        // Token Retrieval
+        let authToken = token;
+        try {
+          if (!authToken) {
+            authToken = localStorage.getItem("authToken") || "";
+            if (!authToken) {
+              toast.error("Not Authenticated.");
+              setLoading(false);
+              return;
+            }
+
+            // API Call
+            try {
+              const registrationResponse = await fetch("/api/signup", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: authToken,
+                },
+                body: JSON.stringify({ name, email, password, reCaptchaToken }),
+              });
+              if (registrationResponse.status === 400) {
+                toast.error("ReCaptcha Error");
+                return;
+              } else if (registrationResponse.status === 403) {
+                toast.error("Session Error");
+                return;
+              } else if (registrationResponse.status === 429) {
+                setErrors({
+                  email: "Too many requests. Please try again later.",
+                });
+                return;
+              } else if (registrationResponse.status === 409) {
+                setErrors({ email: "use already exist." });
+                setLoading(false);
+                return;
+              } else {
+                toast.success("Registration Successful. Redirecting...");
+                router.push(
+                  `/auth/verify-email?email=${encodeURIComponent(email)}`
+                );
+                router.refresh();
+              }
+            } catch (apiError) {
+              console.error("API error:", apiError);
+              toast.error("Registration failed. Please try again.");
+            }
+          }
+        } catch (tokenError) {
+          console.error("Token retrieval error:", tokenError);
+          toast.error("Failed to retrieve token.");
+          setLoading(false);
+          return;
+        }
+      } catch (reCaptchaError) {
+        console.error("reCAPTCHA error:", reCaptchaError);
+        toast.error("Failed to execute reCAPTCHA.");
+        setLoading(false);
+        return;
+      }
     } catch (validationError) {
       console.error("Validation error:", validationError);
       toast.error("Data validation failed.");
       setLoading(false);
       return;
-    }
-
-    // ReCAPTCHA Execution
-    let reCaptchaToken = "";
-    try {
-      if (!executeRecaptcha) {
-        toast.error("reCAPTCHA not available");
-        setLoading(false);
-        return;
-      }
-      reCaptchaToken = await executeRecaptcha("form_submit");
-    } catch (reCaptchaError) {
-      console.error("reCAPTCHA error:", reCaptchaError);
-      toast.error("Failed to execute reCAPTCHA.");
-      setLoading(false);
-      return;
-    }
-
-    // Token Retrieval
-    let authToken = token;
-    try {
-      if (!authToken) {
-        authToken = localStorage.getItem("authToken") || "";
-        if (!authToken) {
-          toast.error("Not Authenticated.");
-          setLoading(false);
-          return;
-        }
-      }
-    } catch (tokenError) {
-      console.error("Token retrieval error:", tokenError);
-      toast.error("Failed to retrieve token.");
-      setLoading(false);
-      return;
-    }
-
-    // API Call
-    try {
-      const registrationResponse = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: authToken,
-        },
-        body: JSON.stringify({ name, email, password, reCaptchaToken }),
-      });
-      if (registrationResponse.status === 400) {
-        toast.error("ReCaptcha Error");
-        return;
-      } else if (registrationResponse.status === 403) {
-        toast.error("Session Error");
-        return;
-      } else if (registrationResponse.status === 429) {
-        setErrors({ email: "Too many requests. Please try again later." });
-        return;
-      } else if (registrationResponse.status === 409) {
-        setErrors({ email: "use already exist." });
-        setLoading(false);
-        return;
-      } else {
-        toast.success("Registration Successful. Redirecting...");
-        router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
-        router.refresh();
-      }
-    } catch (apiError) {
-      console.error("API error:", apiError);
-      toast.error("Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
