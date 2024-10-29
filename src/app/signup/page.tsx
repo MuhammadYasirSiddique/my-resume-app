@@ -1,20 +1,10 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { setToken } from "../../lib/sessionCache";
-
-import jwt from "jsonwebtoken";
 import React from "react";
-import SignUpForm from "./Form"; // Client Component
-import { headers } from "next/headers"; // To access request headers
-
-
-// Helper function to generate JWT based on IP
-const generateJWT = (ip: string) => {
-  const secret = process.env.JWT_SECRET || "your-secret-key"; // Use environment variable in production
-  // console.log(ip);
-  // console.log(secret);
-  return jwt.sign({ ip }, secret, { expiresIn: "1h" }); // Embed IP in the JWT payload
-};
+import SignUpForm from "./Form";
+import { createToken, removeToken } from "@/lib/sessionTokens";
+import { headers } from "next/headers";
+import { v4 as uuidv4 } from "uuid";
 
 export default async function Signup() {
   const session = await getServerSession();
@@ -27,17 +17,21 @@ export default async function Signup() {
   // Extract IP address from the request headers
   const headersList = headers();
   const ip = headersList.get("x-forwarded-for")?.split(",")[0] || "unknown-ip";
+  const reqPage = headersList.get("referer") || "/unknown-page"; // Get the referrer URL or default to "/unknown-page"
 
-  // Generate JWT based on the user's IP
-  const token = generateJWT(ip);
-  // Store token in the session cache (replace 1 with actual user ID)
-  setToken(ip, token, 3600); // Expires in 1 hour
+  await removeToken(ip);
 
+  // Generate a new unique userId using uuid
+  const apikeyId = uuidv4();
+
+  // Store token in the database with userId and userIp
+  const token = await createToken(apikeyId, ip, reqPage);
+  // console.log("token: - ", token);
   return (
     <div>
-        {/* Pass the token as a prop to the client-side form */}
-        <SignUpForm token={token} />
-      
+      {/* Pass the token as a prop to the client-side form */}
+      <SignUpForm token={token} />
+      {/* <SignUpForm /> */}
     </div>
   );
 }

@@ -356,7 +356,7 @@ import { generateCode } from "@/utils/Token";
 import { sendVerificationEmail } from "@/utils/sendEmail";
 import { eq } from "drizzle-orm";
 import arcjet, { detectBot, tokenBucket } from "@arcjet/next";
-import { getToken } from "@/lib/sessionCache";
+import { getToken } from "@/lib/sessionTokens";
 import { headers } from "next/headers";
 
 const aj = arcjet({
@@ -414,17 +414,21 @@ export async function POST(req: NextRequest) {
         const headersList = headers();
         const ip =
           headersList.get("x-forwarded-for")?.split(",")[0] || "unknown-ip";
-        const reqHeaderToken = req.headers.get("Authorization");
-        const currentTime = Math.floor(Date.now() / 1000) - 6000;
-        const sessionData = getToken(ip);
-        console.log("Session Data: ---" + sessionData);
+        const reqHeaderToken = req.headers.get("Authorization") || "";
+        const currentTime = Math.floor(Date.now());
+        const sessionData = getToken(ip, reqHeaderToken);
+        const token = await sessionData;
+        const apiExpiry = Number(token.expiresAt);
+        // console.log("TOekn Expiry from Dataabse: API ---" + apiExpiry);
+        // console.log("Current Time: = API----" + currentTime);
 
         if (!sessionData) {
           return NextResponse.json({ error: "No Session." }, { status: 403 });
         }
-        const { token: cachedToken, expirationTime } = sessionData;
+        // const { token } = sessionData;
 
-        if (expirationTime < currentTime || cachedToken !== reqHeaderToken) {
+        if (apiExpiry < currentTime || token.apiKey !== reqHeaderToken) {
+          console.log("Token Expired. API RESPONSE");
           return NextResponse.json(
             { error: "Session expired or Invalid." },
             { status: 403 }

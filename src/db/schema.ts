@@ -83,3 +83,13 @@ export const db = drizzle(sql);
 
 // export type PasswordReset = InferSelectModel<typeof passwordResets>;
 // export type InsertPasswordReset = InferInsertModel<typeof passwordResets>;
+
+export const api_tokens = pgTable("api_tokens", {
+  apikeyId: uuid("apikey_id").notNull(),
+  userIp: text("user_ip").notNull(),
+
+  apiKey: text("api_key").notNull(), // You could use this for JWT
+  createdAt: timestamp("created_at").defaultNow(), // Timestamp when the token was created
+  expiresAt: timestamp("expires_at").notNull(), // Expiration, 15 minutes after creation
+  reqPage: text("reqpage"), // New column to store request page
+});
