@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import authOptions from "@/lib/auth";
 
 const handler = NextAuth(authOptions);
+// console.log("API Called");
 
 const aj = arcjet({
   key: process.env.ARCJET_KEY!,

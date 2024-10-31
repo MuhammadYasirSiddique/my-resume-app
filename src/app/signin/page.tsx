@@ -24,7 +24,7 @@ async function Signin() {
 
   // Store token in the database with userId and userIp
   const token = await createToken(apikeyId, ip, reqPage);
-  // console.log("token: - ", token);
+  // console.log("token from Page.tsx: - ", token);
 
   return (
     <div>

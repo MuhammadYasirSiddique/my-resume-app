@@ -227,9 +227,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
-import { Great_Vibes, Montserrat } from "@next/font/google";
-import toast from "react-hot-toast";
+// import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import { Great_Vibes, Montserrat } from "next/font/google";
+// import toast from "react-hot-toast";
 
 const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400" });
 const montserrat = Montserrat({ subsets: ["latin"], weight: "300" });
@@ -248,7 +248,8 @@ const SigninForm = ({ token }: { token: string }) => {
       localStorage.setItem("authToken", token);
     }
   }, [token]);
-  const { executeRecaptcha } = useGoogleReCaptcha();
+  // console.log("Token Rcvd from Page...." + token);
+  // const { executeRecaptcha } = useGoogleReCaptcha();
 
   const [formData, setFormData] = useState<SignInFormData>({
     email: "",
@@ -271,102 +272,99 @@ const SigninForm = ({ token }: { token: string }) => {
     setMessage(null); // Clear previous messages
     const formData = new FormData(e.currentTarget);
 
-    let reCaptchaToken = "";
+    // let reCaptchaToken = "";
+    // try {
+    //   if (!executeRecaptcha) {
+    //     toast.error("reCAPTCHA not available");
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   reCaptchaToken = await executeRecaptcha("form_submit");
+    // console.log(reCaptchaToken);
+
+    // Token Retrieval
+    // let authToken = token;
+    // console.log("authTOken Assigned Value : --" + authToken);
+    // try {
+    //   if (!authToken) {
+    //     authToken = localStorage.getItem("authToken") || "";
+    //     // console.log("Auth Token: - " + authToken);
+    //   }
+    //   if (!authToken) {
+    //     toast.error("Not Authenticated.");
+    //     setLoading(false);
+    //     return;
+    //   } else {
+    // console.log(authToken);
     try {
-      if (!executeRecaptcha) {
-        toast.error("reCAPTCHA not available");
+      // Perform the sign-in request
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: formData.get("email"),
+        password: formData.get("password"),
+        // reCaptchaToken,
+        // authToken,
+      });
+
+      // console.log(window.location.href);
+      console.log("Response from signIn:", res); // Inspect for any anomalies
+
+      const email = formData.get("email") as string;
+
+      // console.log("Status returned from Server:  - " + res?.status);
+
+      if (res?.status === 429) {
+        setMessage("Too many requests. Please try again later.");
         setLoading(false);
         return;
       }
-      reCaptchaToken = await executeRecaptcha("form_submit");
 
-      // Token Retrieval
-      let authToken = token;
-      try {
-        if (!authToken) {
-          authToken = localStorage.getItem("authToken") || "";
-          if (!authToken) {
-            toast.error("Not Authenticated.");
-            setLoading(false);
-            return;
-          }
+      // Check for errors in the response
+      if (res?.error) {
+        console.log(res.error);
+        if (res.error === "Email not verified.") {
+          // Show a message with "Email not verified" message
+          setMessage("Email not verified. Redirecting to verification page...");
 
-          try {
-            // Perform the sign-in request
-            const res = await signIn("credentials", {
-              redirect: false,
-              email: formData.get("email"),
-              password: formData.get("password"),
-              reCaptchaToken,
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: authToken,
-              },
-              // callbackUrl: `${window.location.origin}/dashboard/`,
-            });
-
-            // console.log(window.location.href);
-            console.log("Response from signIn:", res); // Inspect for any anomalies
-
-            const email = formData.get("email") as string;
-
-            console.log("Status returned from Server:  - " + res?.status);
-
-            if (res?.status === 429) {
-              setMessage("Too many requests. Please try again later.");
-              setLoading(false);
-              return;
-            }
-
-            // Check for errors in the response
-            if (res?.error) {
-              if (res.error === "Email not verified.") {
-                // Show a message with "Email not verified" message
-                setMessage(
-                  "Email not verified. Redirecting to verification page..."
-                );
-
-                // Redirect to the verify-email page
-                router.push(
-                  `/auth/verify-email?email=${encodeURIComponent(email)}`
-                );
-                setLoading(false);
-                return;
-              }
-
-              // For any other errors, show a generic error message
-              setMessage("Failed to sign in. Please check your credentials.");
-              setLoading(false);
-              return;
-            }
-
-            // Successful sign-in: Show success message and redirect to dashboard
-            if (res?.status === 200) {
-              setMessage("Signed in successfully!. Redirecting...");
-              setLoading(false);
-              router.push("/dashboard");
-              router.refresh();
-            }
-          } catch (error) {
-            console.error("Error during sign-in:", error);
-            setMessage("An unexpected error occurred. Please try again later.");
-            router.push(
-              `/auth/error?error=${encodeURIComponent("Something went wrong.")}`
-            );
-            router.refresh();
-          }
+          // Redirect to the verify-email page
+          router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+          setLoading(false);
+          return;
         }
-      } catch (tokenError) {
-        console.error("Token retrieval error:", tokenError);
-        toast.error("Failed to retrieve token.");
+
+        // For any other errors, show a generic error message
+        setMessage("Failed to sign in. Please check your credentials.");
         setLoading(false);
         return;
       }
-    } catch (reCaptchaError) {
-      console.error("reCAPTCHA error:", reCaptchaError);
-      toast.error("Failed to execute reCAPTCHA.");
-      setLoading(false);
-      return;
+
+      // Successful sign-in: Show success message and redirect to dashboard
+      if (res?.status === 200) {
+        setMessage("Signed in successfully!. Redirecting...");
+        setLoading(false);
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Error during sign-in:", error);
+      setMessage("An unexpected error occurred. Please try again later.");
+      router.push(
+        `/auth/error?error=${encodeURIComponent("Something went wrong.")}`
+      );
+      router.refresh();
+      // }
+      //   }
+      // } catch (tokenError) {
+      //   console.error("Token retrieval error:", tokenError);
+      //   toast.error("Failed to retrieve token.");
+      //   setLoading(false);
+      //   return;
+      // }
+      // } catch (reCaptchaError) {
+      //   console.error("reCAPTCHA error:", reCaptchaError);
+      //   toast.error("Failed to execute reCAPTCHA.");
+      //   setLoading(false);
+      //   return;
     } finally {
       setLoading(false);
     }

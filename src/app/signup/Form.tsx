@@ -11,7 +11,7 @@ import { signupSchema } from "@/zod/signupSchema";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react"; // Importing icons from lucide-react
 import toast, { Toaster } from "react-hot-toast";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
-import { Great_Vibes, Montserrat } from "@next/font/google";
+import { Great_Vibes, Montserrat } from "next/font/google";
 
 const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400" });
 const montserrat = Montserrat({ subsets: ["latin"], weight: "300" });
