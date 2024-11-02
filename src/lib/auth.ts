@@ -160,6 +160,8 @@ import { compare } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { sql } from "@vercel/postgres";
 import { NextAuthOptions } from "next-auth";
+import { getToken } from "./sessionTokens";
+import { headers } from "next/headers";
 
 // Function to validate reCAPTCHA token
 async function validateReCaptcha(token: string): Promise<boolean> {
@@ -172,31 +174,27 @@ async function validateReCaptcha(token: string): Promise<boolean> {
   return data.success;
 }
 
-// async function validateSessionAndApiKey(
-//   ip: string,
-//   reqHeaderToken: string
-// ): Promise<boolean> {
-//   try {
-//     const currentTime = Math.floor(Date.now());
-//     const sessionData = await getToken(ip, reqHeaderToken);
+async function validateSessionAndApiKey(authToken: string): Promise<boolean> {
+  const headersList = headers();
+  const ip = headersList.get("x-forwarded-for")?.split(",")[0] || "unknown-ip";
+  try {
+    const currentTime = Math.floor(Date.now());
+    const sessionData = await getToken(ip, authToken);
 
-//     if (!sessionData) {
-//       throw new Error("No active session.");
-//     }
-//     const token = sessionData;
-//     if (
-//       Number(token.expiresAt) < currentTime ||
-//       token.apiKey !== reqHeaderToken
-//     ) {
-//       throw new Error("Session expired or invalid API key.");
-//     }
+    if (!sessionData) {
+      throw new Error("No active session.");
+    }
+    const token = sessionData;
+    if (Number(token.expiresAt) < currentTime || token.apiKey !== authToken) {
+      throw new Error("Session expired or invalid API key.");
+    }
 
-//     return true;
-//   } catch (error) {
-//     console.error("Session/API Key validation failed:", error);
-//     return false;
-//   }
-// }
+    return true;
+  } catch (error) {
+    console.error("Session/API Key validation failed:", error);
+    return false;
+  }
+}
 
 // Auth options configuration
 const authOptions: NextAuthOptions = {
@@ -212,12 +210,22 @@ const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
         reCaptchaToken: { label: "reCaptchaToken", type: "text" },
+        authToken: { label: "authToken", type: "text" },
       },
       authorize: async (credentials) => {
         // Outer Layer: reCAPTCHA validation
         const reCaptchaToken = credentials?.reCaptchaToken;
+        const authToken = credentials?.authToken;
+        // console.log(authToken);
         const isValidReCaptcha = await validateReCaptcha(reCaptchaToken!);
-        // console.log("reCaptcha verification response:", isValidReCaptcha);
+        const isAuthTokenValid = await validateSessionAndApiKey(authToken!);
+        console.log("Auth token validation response:", isAuthTokenValid);
+        console.log("reCaptcha verification response:", isValidReCaptcha);
+
+        if (!isAuthTokenValid) {
+          throw new Error("Session validation failed.");
+        }
+
         if (!isValidReCaptcha) {
           throw new Error("Invalid reCAPTCHA token.");
         }
@@ -230,6 +238,7 @@ const authOptions: NextAuthOptions = {
         const user = response[0];
 
         if (!user) {
+          console.log("User SSEarch Result: - " + user);
           throw new Error("Invalid User ID or Password.");
         }
 

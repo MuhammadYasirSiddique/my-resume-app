@@ -68,7 +68,7 @@ const aj = arcjet({
 const ajProtectedPOST = async (req: Request, res: Response) => {
   // Protect with Arcjet
   const decision = await aj.protect(req);
-  console.log("Arcjet decision", decision);
+  // console.log("Arcjet decision", decision);
 
   if (decision.isDenied()) {
     if (decision.reason.isRateLimit()) {
