@@ -1,16 +1,25 @@
 "use client";
 
 // import { useRouter } from "next/navigation";
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 
 import { LoaderCircle } from "lucide-react";
 import { forgotEmailSchema } from "@/zod/forgotPasswordSchema";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import toast from "react-hot-toast";
 
 interface FormData {
   email: string;
 }
 
-const ForgotPasswordForm: React.FC = () => {
+const ForgotPasswordForm = ({ token }: { token: string }) => {
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("authToken", token);
+    }
+  }, [token]);
+  const { executeRecaptcha } = useGoogleReCaptcha();
+
   const [email, setEmail] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   // const router = useRouter();
@@ -31,48 +40,79 @@ const ForgotPasswordForm: React.FC = () => {
 
     const zodResult = forgotEmailSchema.safeParse({ email });
 
-    if (!zodResult.success) {
-      const fieldErrors: Partial<FormData> = {};
-      zodResult.error.errors.forEach((err) => {
-        const fieldName = err.path[0] as keyof FormData;
-        fieldErrors[fieldName] = err.message;
-      });
-
-      setErrors(fieldErrors); // Set error messages
-      setLoading(false);
-      return;
-    }
-
     try {
-      const res = await fetch("/api/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-      // console.log(email);
-      if (res.status === 429) {
-        setMessage("Too many requests. Please try again later.");
+      if (!zodResult.success) {
+        const fieldErrors: Partial<FormData> = {};
+        zodResult.error.errors.forEach((err) => {
+          const fieldName = err.path[0] as keyof FormData;
+          fieldErrors[fieldName] = err.message;
+        });
+
+        setErrors(fieldErrors); // Set error messages
+        setLoading(false);
         return;
       }
-      // console.log("Status Code : - " + data.status);
-      if (res.status === 200) {
-        setMessage("Password reset link sent! Check your email.");
+      // ReCAPTCHA Execution
+      let reCaptchaToken = "";
+      try {
+        if (!executeRecaptcha) {
+          toast.error("reCAPTCHA not available");
+          setLoading(false);
+          return;
+        }
+        reCaptchaToken = await executeRecaptcha("form_submit");
 
-        setTimeout(() => {
-          // router.push("/");
-          // router.refresh();
-        }, 2000);
-      } else if (res.status === 404) {
-        setMessage("No user is registered with this email");
-        setTimeout(() => {
-          // router.push("/signup");
-          // router.refresh();
-        }, 2000);
+        // Token Retrieval
+        const authToken = token;
+
+        try {
+          if (!authToken) {
+            setMessage("Not Authenticated.");
+
+            setLoading(false);
+            return;
+          }
+
+          try {
+            const res = await fetch("/api/forgot-password", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: authToken,
+              },
+              body: JSON.stringify({ email, reCaptchaToken }),
+            });
+            // console.log(email);
+            if (res.status === 429) {
+              setMessage("Too many requests. Please try again later.");
+              return;
+            }
+            // console.log("Status Code : - " + data.status);
+            if (res.status === 200) {
+              setMessage("Password reset link sent! Check your email.");
+
+              setTimeout(() => {
+                // router.push("/");
+                // router.refresh();
+              }, 2000);
+            } else if (res.status === 404) {
+              setMessage("No user is registered with this email");
+              setTimeout(() => {
+                // router.push("/signup");
+                // router.refresh();
+              }, 2000);
+            }
+          } catch (error) {
+            console.log("Error Sending email" + error);
+          }
+        } catch (error) {
+          console.log("Session Validation Failed" + error);
+        }
+      } catch (error) {
+        console.log("ReCaptcha Failed" + error);
       }
     } catch (error) {
-      console.log("Error Sending email" + error);
+      console.log("Input Validation Failed" + error);
     } finally {
       setLoading(false);
     }
