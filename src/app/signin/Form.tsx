@@ -309,14 +309,13 @@ const SigninForm = ({ token }: { token: string }) => {
 
             // console.log("Status returned from Server:  - " + res?.status);
 
-            if (res?.status === 429) {
-              setMessage("Too many requests. Please try again later.");
-              setLoading(false);
-              return;
-            }
-
             // Check for errors in the response
             if (res?.error) {
+              if (res?.status === 429) {
+                setMessage("Too many requests. Please try again later.");
+                setLoading(false);
+                return;
+              }
               // console.log(res.error);
               if (res.error === "Session/API Key validation failed.") {
                 setMessage("Session/API Key validation failed.");
@@ -325,7 +324,12 @@ const SigninForm = ({ token }: { token: string }) => {
 
               if (res.error === "Invalid User ID or Password.") {
                 // Show a message with "Email not verified" message
-                setMessage("Invalid User ID or Password.page");
+                setMessage("Invalid User ID or Password");
+                return;
+              }
+              if (res.error === "Invalid credentials.") {
+                // Show a message with "Email not verified" message
+                setMessage("Invalid credentials.");
                 return;
               }
 
@@ -344,9 +348,7 @@ const SigninForm = ({ token }: { token: string }) => {
               }
 
               // For any other errors, show a generic error message
-              setMessage(
-                "Failed to sign in. Please check your credentials.Page"
-              );
+              setMessage("Failed to sign in. Please check your credentials.");
               setLoading(false);
               return;
             }
@@ -369,13 +371,13 @@ const SigninForm = ({ token }: { token: string }) => {
         }
       } catch (tokenError) {
         console.error("Token retrieval error:", tokenError);
-        toast.error("Failed to retrieve token.");
+        toast.error("Session invalid of Expired.");
         setLoading(false);
         return;
       }
     } catch (reCaptchaError) {
       console.error("reCAPTCHA error:", reCaptchaError);
-      toast.error("Failed to execute reCAPTCHA.");
+      toast.error("ReCAPTCHA failed.");
       setLoading(false);
       return;
     } finally {

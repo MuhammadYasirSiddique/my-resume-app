@@ -214,20 +214,25 @@ const authOptions: NextAuthOptions = {
       },
       authorize: async (credentials) => {
         // Outer Layer: reCAPTCHA validation
+        // console.log("Credentials:  - " + credentials?.email);
         const reCaptchaToken = credentials?.reCaptchaToken;
         const authToken = credentials?.authToken;
         // console.log(authToken);
         const isValidReCaptcha = await validateReCaptcha(reCaptchaToken!);
         const isAuthTokenValid = await validateSessionAndApiKey(authToken!);
-        console.log("Auth token validation response:", isAuthTokenValid);
-        console.log("reCaptcha verification response:", isValidReCaptcha);
+        // console.log("Auth token validation response:", isAuthTokenValid);
+        // console.log("reCaptcha verification response:", isValidReCaptcha);
+
+        if (!isValidReCaptcha) {
+          throw new Error("Invalid reCAPTCHA token.");
+        }
 
         if (!isAuthTokenValid) {
           throw new Error("Session validation failed.");
         }
 
-        if (!isValidReCaptcha) {
-          throw new Error("Invalid reCAPTCHA token.");
+        if (!credentials) {
+          throw new Error("Credentials not provided.");
         }
 
         // Verify user credentials
@@ -237,8 +242,10 @@ const authOptions: NextAuthOptions = {
           .where(eq(users.email, credentials?.email || ""));
         const user = response[0];
 
+        // if (email === user)
+
         if (!user) {
-          console.log("User SSEarch Result: - " + user);
+          // console.log("User Not Found: in database");
           throw new Error("Invalid User ID or Password.");
         }
 
@@ -250,6 +257,7 @@ const authOptions: NextAuthOptions = {
           credentials?.password || "",
           user.password || ""
         );
+
         if (!passwordMatch) {
           throw new Error("Invalid credentials.");
         }
