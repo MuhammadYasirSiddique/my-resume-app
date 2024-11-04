@@ -70,7 +70,7 @@ const VerifyEmailForm = ({ email, authToken }: VerifyEmailProps) => {
             setLoading(false);
             return;
           }
-          console.log(aToken);
+          // console.log(aToken);
 
           if (token && email) {
             setLoading(true); // Set loading to true during the API call
@@ -135,14 +135,14 @@ const VerifyEmailForm = ({ email, authToken }: VerifyEmailProps) => {
     // ReCAPTCHA Execution
     let reCaptchaToken = "";
     try {
-      console.log("ReCpatcha....");
+      // console.log("ReCpatcha....");
       if (!executeRecaptcha) {
         toast.error("reCAPTCHA not available");
         setLoading(false);
         return;
       }
       reCaptchaToken = await executeRecaptcha("resend_email");
-      console.log(reCaptchaToken);
+      // console.log(reCaptchaToken);
 
       const aToken = localStorage.getItem("authToken");
       try {
