@@ -85,52 +85,51 @@ const SignUpForm = ({ token }: { token: string }) => {
         reCaptchaToken = await executeRecaptcha("form_submit");
 
         // Token Retrieval
-        let authToken = token;
+        const authToken = token;
         try {
           if (!authToken) {
-            authToken = localStorage.getItem("authToken") || "";
-            if (!authToken) {
-              toast.error("Not Authenticated.");
+            toast.error("Not Authenticated.");
+            setLoading(false);
+            return;
+          }
+          console.log(authToken);
+          // API Call
+          try {
+            console.log("API Calling....");
+            const registrationResponse = await fetch("/api/signup", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: authToken,
+              },
+              body: JSON.stringify({ name, email, password, reCaptchaToken }),
+            });
+
+            if (registrationResponse.status === 400) {
+              toast.error("ReCaptcha Error");
+              return;
+            } else if (registrationResponse.status === 403) {
+              toast.error("Session Error");
+              return;
+            } else if (registrationResponse.status === 429) {
+              setErrors({
+                email: "Too many requests. Please try again later.",
+              });
+              return;
+            } else if (registrationResponse.status === 409) {
+              setErrors({ email: "use already exist." });
               setLoading(false);
               return;
+            } else {
+              toast.success("Registration Successful. Redirecting...");
+              router.push(
+                `/auth/verify-email?email=${encodeURIComponent(email)}`
+              );
+              router.refresh();
             }
-
-            // API Call
-            try {
-              const registrationResponse = await fetch("/api/signup", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: authToken,
-                },
-                body: JSON.stringify({ name, email, password, reCaptchaToken }),
-              });
-              if (registrationResponse.status === 400) {
-                toast.error("ReCaptcha Error");
-                return;
-              } else if (registrationResponse.status === 403) {
-                toast.error("Session Error");
-                return;
-              } else if (registrationResponse.status === 429) {
-                setErrors({
-                  email: "Too many requests. Please try again later.",
-                });
-                return;
-              } else if (registrationResponse.status === 409) {
-                setErrors({ email: "use already exist." });
-                setLoading(false);
-                return;
-              } else {
-                toast.success("Registration Successful. Redirecting...");
-                router.push(
-                  `/auth/verify-email?email=${encodeURIComponent(email)}`
-                );
-                router.refresh();
-              }
-            } catch (apiError) {
-              console.error("API error:", apiError);
-              toast.error("Registration failed. Please try again.");
-            }
+          } catch (apiError) {
+            console.error("API error:", apiError);
+            toast.error("Registration failed. Please try again.");
           }
         } catch (tokenError) {
           console.error("Token retrieval error:", tokenError);

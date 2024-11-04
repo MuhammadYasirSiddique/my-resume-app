@@ -1,25 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoaderCircle } from "lucide-react";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 import { verifyEmail } from "@/zod/signupSchema";
+import toast, { Toaster } from "react-hot-toast";
 
 interface VerifyEmailProps {
   email: string;
+  authToken: string;
 }
 
 interface verifyCode {
   code: number;
 }
 
-const VerifyEmailForm = ({ email }: VerifyEmailProps) => {
+const VerifyEmailForm = ({ email, authToken }: VerifyEmailProps) => {
+  useEffect(() => {
+    if (authToken) {
+      localStorage.setItem("authToken", authToken);
+    }
+  }, [authToken]);
+  // console.log("authTOken Rcvd;;;; " + authToken);
   const [token, setToken] = useState<string>(""); // Token from the user input
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState<boolean>(false); // Loading state for submit
   const [loadingResend, setLoadingResend] = useState<boolean>(false); // Loading state for resend
   const [message, setMessage] = useState<string>("");
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const router = useRouter();
 
@@ -29,56 +39,92 @@ const VerifyEmailForm = ({ email }: VerifyEmailProps) => {
     const code = parseInt(token); // Convert the token to a number
     const result = verifyEmail.safeParse({ code });
 
-    // Check if validation failed
-    if (!result.success) {
-      // Map Zod errors to the string error state
-      const fieldErrors: { [key: string]: string } = {};
-      result.error.errors.forEach((err) => {
-        const fieldName = err.path[0] as keyof verifyCode;
-        fieldErrors[fieldName] = err.message;
-      });
-      setErrors(fieldErrors); // Set string error messages
-      setLoading(false);
-      return;
-    }
-
-    if (token && email) {
-      setLoading(true); // Set loading to true during the API call
-      try {
-        const response = await fetch("/api/emailVerify", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, token }),
+    try {
+      // Check if validation failed
+      if (!result.success) {
+        // Map Zod errors to the string error state
+        const fieldErrors: { [key: string]: string } = {};
+        result.error.errors.forEach((err) => {
+          const fieldName = err.path[0] as keyof verifyCode;
+          fieldErrors[fieldName] = err.message;
         });
+        setErrors(fieldErrors); // Set string error messages
+        setLoading(false);
+        return;
+      }
 
-        const data = await response.json();
-        // console.log(response.status);
-        if (response.status === 429) {
-          setMessage("Too many requests. Please try again later.");
+      // ReCAPTCHA Execution
+      let reCaptchaToken = "";
+      try {
+        if (!executeRecaptcha) {
+          toast.error("reCAPTCHA not available");
+          setLoading(false);
           return;
         }
-        if (response.ok) {
-          setMessage("Email verified successfully!. Redirecting to Sign-in...");
-          setTimeout(() => {
-            router.push("/signin");
-          }, 2000);
-        } else {
-          setMessage(data.message || "Email verification failed.");
+        reCaptchaToken = await executeRecaptcha("form_submit");
+
+        try {
+          const aToken = localStorage.getItem("authToken");
+          if (!aToken) {
+            toast.error("Not Authenticated.");
+            setLoading(false);
+            return;
+          }
+          console.log(aToken);
+
+          if (token && email) {
+            setLoading(true); // Set loading to true during the API call
+            try {
+              const response = await fetch("/api/emailVerify", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: aToken,
+                },
+                body: JSON.stringify({ email, token, reCaptchaToken }),
+              });
+
+              const data = await response.json();
+              // console.log(response.status);
+              if (response.status === 429) {
+                setMessage("Too many requests. Please try again later.");
+                return;
+              }
+              if (response.ok) {
+                setMessage(
+                  "Email verified successfully!. Redirecting to Sign-in..."
+                );
+                setTimeout(() => {
+                  router.push("/signin");
+                }, 2000);
+              } else {
+                setMessage(data.message || "Email verification failed.");
+              }
+            } catch (error) {
+              console.log(error);
+              setMessage("An error occurred during verification.");
+            } finally {
+              setLoading(false); // Set loading to false after the API call
+              setToken(""); // Clear the token input after submission
+            }
+          } else {
+            setMessage("Please enter a valid token.");
+          }
+        } catch {
+          console.log("Session Validation Failed");
+          setMessage("Session Validation Failed");
         }
-      } catch (error) {
-        console.log(error);
-        setMessage("An error occurred during verification.");
-      } finally {
-        setLoading(false); // Set loading to false after the API call
-        setToken(""); // Clear the token input after submission
+      } catch {
+        console.log("ReCaptcha unseccessul");
+        setMessage("ReCaptcha unseccessul");
+        setLoading(false);
       }
-    } else {
-      setMessage("Please enter a valid token.");
+    } catch {
+      console.log("Input Validation Failed");
+      setMessage("Input Validation Failed");
+      setLoading(false);
     }
   };
-
   const handleResendVerification = async () => {
     setLoadingResend(true); // Set loading for resend button
     if (!email) {
@@ -86,31 +132,62 @@ const VerifyEmailForm = ({ email }: VerifyEmailProps) => {
       setLoadingResend(false);
       return;
     }
-
+    // ReCAPTCHA Execution
+    let reCaptchaToken = "";
     try {
-      const response = await fetch("/api/resendVerification", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (response.status === 429) {
-        setMessage("Too many requests. Please try again later.");
+      console.log("ReCpatcha....");
+      if (!executeRecaptcha) {
+        toast.error("reCAPTCHA not available");
+        setLoading(false);
         return;
       }
+      reCaptchaToken = await executeRecaptcha("resend_email");
+      console.log(reCaptchaToken);
 
-      if (response.ok) {
-        setMessage("Verification email resent successfully!");
-      } else {
-        setMessage(data.message || "Failed to resend verification email.");
+      const aToken = localStorage.getItem("authToken");
+      try {
+        // console.log("Auth Token:-  Resend email :" + aToken);
+        if (!aToken) {
+          toast.error("Not Authenticated.");
+          setLoading(false);
+          return;
+        }
+        // console.log(authToken);
+
+        try {
+          const response = await fetch("/api/resendVerification", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: aToken,
+            },
+            body: JSON.stringify({ email, reCaptchaToken }),
+          });
+
+          const data = await response.json();
+
+          if (response.status === 429) {
+            setMessage("Too many requests. Please try again later.");
+            return;
+          }
+
+          if (response.ok) {
+            setMessage("Verification email resent successfully!");
+          } else {
+            setMessage(data.message || "Failed to resend verification email.");
+          }
+        } catch (error) {
+          console.log(error);
+          setMessage("An error occurred while resending verification email.");
+        }
+      } catch {
+        console.log("Session Validation Failed");
+        setMessage("Session Validation Failed");
       }
-    } catch (error) {
-      console.log(error);
-      setMessage("An error occurred while resending verification email.");
+    } catch {
+      console.log("ReCaptcha unseccessul");
+      setMessage("ReCaptcha unseccessul");
+      setLoading(false);
     } finally {
       setLoadingResend(false); // Set loading to false after response
     }
@@ -127,7 +204,7 @@ const VerifyEmailForm = ({ email }: VerifyEmailProps) => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      {/* <Toaster position="top-right" reverseOrder={false} /> */}
+      <Toaster position="top-right" reverseOrder={false} />
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h1 className="text-xl font-semibold mb-4">Email Verification</h1>
         <form onSubmit={handleSubmit}>

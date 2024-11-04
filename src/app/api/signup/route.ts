@@ -21,13 +21,12 @@ interface RequestBody {
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession();
-
+  // console.log("API Called");
+  const body: RequestBody = await req.json();
+  const userId = body.email;
+  const { reCaptchaToken } = body;
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
   try {
-    const body: RequestBody = await req.json();
-    const userId = body.email;
-    const { reCaptchaToken } = body;
-    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-
     // reCaptcha validation
     try {
       const reCaptchaVerificationResponse = await fetch(
