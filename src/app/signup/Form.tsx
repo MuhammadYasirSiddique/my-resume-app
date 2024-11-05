@@ -154,45 +154,51 @@ const SignUpForm = ({ token }: { token: string }) => {
   };
 
   return (
-    <div className="flex min-h-screen">
-      {/* Left Section with Logo and Slogan */}
-      <div className="flex items-center w-1/2 justify-center min-h-screen bg-blue-00">
-        <div className=" flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 relative rounded-lg shadow-lg overflow-hidden p-4">
-          {/* Circle Gradient at Bottom Left */}
-          <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-br from-white to-blue-400 opacity-60 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
-          <div className="absolute bottom-0 left-0 w-3/4 h-3/4 bg-gradient-to-br from-white to-blue-400 opacity-60 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
-          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-white to-yellow-400 opacity-100 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black">
-            {" "}
+    <div className="flex flex-col-reverse lg:flex-row min-h-screen">
+      {/* Right Section with Logo and Slogan */}
+      <div className="flex items-center w-full h-60  lg:w-1/2 justify-center min-h-screen bg-blue-100">
+        <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 relative rounded-lg shadow-lg overflow-hidden p-4">
+          {/* Circle Gradients */}
+          <div className="absolute bottom-0 left-0 w-3/4 h-3/4 lg:w-full lg:h-full bg-gradient-to-br from-white to-blue-400 opacity-60 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black hidden sm:block"></div>
+          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 lg:w-3/4 lg:h-3/4 bg-gradient-to-br from-white to-blue-400 opacity-60 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black hidden sm:block"></div>
+
+          {/* Logo Section */}
+          <div className="absolute top-0 right-0 sm:w-48 sm:h-48 w-36 h-36 bg-gradient-to-br from-white to-yellow-400 opacity-100 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black">
             <Image
-              src="/AFLogo.png" // Replace with the path to your logo
-              width={150}
-              height={150}
+              src="/AFLogo.png"
+              width={100} // Adjust for small screens
+              height={100} // Adjust for small screens
               alt="Logo"
-              className="mt-4 mx-auto opacity-100"
+              className="w-24 h-24 sm:w-32 sm:h-32 lg:w-42 lg:h-42 mt-6 mx-auto opacity-100"
             />
-            <div className="absolute top-0 left-0 w-10 h-10 bg-gradient-to-br from-white to-blue-400  rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
+            <div className="absolute top-0 left-0 w-6 h-6 sm:w-10 sm:h-10 bg-gradient-to-br from-white to-blue-400 rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
           </div>
-          <div className="absolute top-0 left-0 w-10 h-10 bg-gradient-to-br from-white to-red-400 opacity-60 rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
+
+          {/* Additional Circle on Top Left */}
+          <div className="absolute top-0 left-0 lg:w-10 lg:h-10 bg-gradient-to-br from-white to-red-400 opacity-60 rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black hidden sm:block"></div>
+
           {/* Semi-transparent overlay */}
-          <div className="absolute inset-0 bg-blue-100 opacity-20" />
+          <div className="absolute inset-0 bg-blue-100 opacity-20 sm:opacity-20" />
 
           {/* Content */}
-          <div className="text-center text-slate-800 z-10">
-            <h1 className={`${greatVibes.className} text-6xl font-bold mb-4`}>
+          <div className="text-center text-black z-10 px-4 sm:px-0">
+            <h1
+              className={`${greatVibes.className} text-4xl sm:text-6xl font-bold mb-2 sm:mb-4`}
+            >
               My Resume
             </h1>
-            <p className={`${montserrat.className} text-lg italic`}>
-              Design. Disseminate. Dominate.{" "}
+            <p className={`${montserrat.className} text-md sm:text-lg italic`}>
+              Design. Disseminate. Dominate.
             </p>
           </div>
         </div>
       </div>
 
       {/* Right Section with Sign-up Form */}
-      <div className="flex flex-col w-1/2 items-center justify-center min-h-screen py-2 bg-gray-50">
+      <div className="flex flex-col w-full lg:w-1/2 items-center justify-center min-h-screen py-2 bg-gray-50">
         <Toaster position="top-center" reverseOrder={false} />
         <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-2xl">
-          <h2 className="text-center text-3xl font-bold text-gray-900">
+          <h2 className="mt-2 text-lg text-center sm:text-2xl font-bold text-gray-900">
             Create Your Account
           </h2>
 
@@ -305,7 +311,7 @@ const SignUpForm = ({ token }: { token: string }) => {
             </span>
             <button
               type="submit"
-              className={`w-full px-4 py-2 text-white font-semibold rounded-lg shadow-md bg-gradient-to-r from-blue-500 to-sky-500 hover:from-sky-500 hover:to-blue-500 focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-transform transform-gpu 
+              className={`w-full h-10 px-4 py-2 text-white font-semibold rounded-lg shadow-md bg-gradient-to-r from-blue-500 to-sky-500 hover:from-sky-500 hover:to-blue-500 focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-transform transform-gpu 
                 ${loading ? "bg-gray-400 cursor-not-allowed" : ""}`}
               disabled={loading}
             >
@@ -317,13 +323,13 @@ const SignUpForm = ({ token }: { token: string }) => {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm">
+          <span className="mt-2 text-center text-sm">
             Already have an account?{" "}
             <Link href="/signin" className="text-sky-500 hover:underline">
               Sign In
             </Link>
-          </div>
-          <div className="mt-6">
+          </span>
+          <div className="mt-2">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300"></div>
@@ -334,7 +340,7 @@ const SignUpForm = ({ token }: { token: string }) => {
                 </span>
               </div>
             </div>
-            <div className="mt-6 grid grid-cols-1 gap-3">
+            <div className="mt-2 grid grid-cols-1 gap-3">
               <button
                 onClick={() => signIn("google")}
                 className={`w-full flex justify-center items-center px-4 py-2 mt-4 bg-white text-black font-semibold rounded-md shadow hover:bg-gray-200 transition-colors duration-300 gap-2 sm:gap-4
