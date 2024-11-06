@@ -6,6 +6,9 @@ import React from "react";
 import Image from "next/image";
 import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
 import { Menu, X } from "lucide-react"; // Importing icons from lucide-react
+import { Great_Vibes } from "next/font/google";
+
+const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400" });
 
 function NavbarLogin() {
   const { data: session } = useSession();
@@ -66,18 +69,18 @@ function NavbarLogin() {
   };
 
   return (
-    <div className="mx-10 mt-5 flex justify-between items-center">
-      <div>
+    <div className="flex justify-between items-center bg-gradient-to-r from-blue-800 to-blue-500 p-4  shadow-md">
+      <div className={`${greatVibes.className} `}>
         <Link href="/">
-          <button>
-            <h1 className="text-lg">My Resume</h1>
+          <button className="text-white font-thin text-4xl transition-all hover:text-blue-200 glow-amber">
+            My Resume
           </button>
         </Link>
       </div>
 
       {/* Hamburger menu icon for small screens */}
       <button
-        className={`menu-button lg:hidden transition-all duration-300 ${
+        className={`menu-button text-white lg:hidden transition-all duration-300 ${
           mobileMenuVisible ? "rotate-90" : ""
         }`}
         onClick={toggleMobileMenu}
@@ -86,15 +89,18 @@ function NavbarLogin() {
       </button>
 
       {/* Profile Image and Submenu */}
-      <div className="relative hidden lg:block z-50">
-        <div className="flex justify-center items-center text-center text-base">
+      <div className="relative hidden lg:block z-50 bg-amber-50">
+        <div className="flex justify-center items-center text-center text-base text-white">
           <div className="mr-2">
             <p>Welcome, {session?.user?.name}!</p>
           </div>
 
           {/* Profile Image Button */}
           <div>
-            <button className="menu-button" onClick={toggleMenu}>
+            <button
+              className="menu-button hover:scale-105"
+              onClick={toggleMenu}
+            >
               <Image
                 src={session?.user?.image || "/profileimg.png"}
                 height={50}
@@ -125,17 +131,17 @@ function NavbarLogin() {
             </div>
           </div>
           <hr />
-          <div className="mt-2">
+          <div className="mt-2 hover:bg-slate-100">
             <Link href="/auth/reset-password">
               <button onClick={() => setMenuVisible(false)}>
-                <p className="text-sm text-gray-500">Reset Password</p>
+                <p className="text-sm text-gray-500 ">Reset Password</p>
               </button>
             </Link>
           </div>
-          <div className="">
+          <div className="hover:bg-slate-100">
             <Link href="/dashboard">
               <button onClick={() => setMenuVisible(false)}>
-                <p className="text-sm text-gray-500">Dashboard</p>
+                <p className="text-sm text-gray-500 ">Dashboard</p>
               </button>
             </Link>
           </div>

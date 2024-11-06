@@ -255,8 +255,8 @@ const SigninForm = ({ token }: { token: string }) => {
 
             <button
               type="submit"
-              className={`w-full h-10 px-4 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition-colors duration-300
-            ${loading ? "bg-gray-400 cursor-not-allowed" : ""}`}
+              className={`w-full h-10 px-4 py-2 text-white font-semibold rounded-lg shadow-md bg-gradient-to-r from-blue-500 to-sky-500 hover:from-sky-500 hover:to-blue-500 focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-transform transform-gpu 
+                ${loading ? "bg-gray-400 cursor-not-allowed" : ""}`}
               disabled={loading}
             >
               {loading ? (
@@ -323,11 +323,11 @@ const SigninForm = ({ token }: { token: string }) => {
               alt="Logo"
               className="w-24 h-24 sm:w-32 sm:h-32 lg:w-42 lg:h-42 mt-6 mx-auto opacity-100"
             />
-            <div className="absolute top-0 right-0 w-6 h-6 sm:w-10 sm:h-10 bg-gradient-to-br from-white to-yellow-400 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
+            <div className="absolute top-0 right-0 w-6 h-6 sm:w-10 sm:h-10 bg-gradient-to-br from-white to-amber-900 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
           </div>
 
           {/* Additional Circle on Top Right */}
-          <div className="absolute top-0 right-0  lg:w-10 lg:h-10 bg-gradient-to-br from-white to-orange-400 opacity-60 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black hidden sm:block"></div>
+          <div className="absolute top-0 right-0  lg:w-10 lg:h-10 bg-gradient-to-br from-white to-amber-900 opacity-100 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black hidden sm:block"></div>
 
           {/* Semi-transparent overlay */}
           <div className="absolute inset-0 bg-blue-100 opacity-20 sm:opacity-20" />

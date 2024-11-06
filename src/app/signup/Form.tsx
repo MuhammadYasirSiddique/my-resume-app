@@ -163,7 +163,7 @@ const SignUpForm = ({ token }: { token: string }) => {
           <div className="absolute bottom-0 left-0 w-1/2 h-1/2 lg:w-3/4 lg:h-3/4 bg-gradient-to-br from-white to-blue-400 opacity-60 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black hidden sm:block"></div>
 
           {/* Logo Section */}
-          <div className="absolute top-0 right-0 sm:w-48 sm:h-48 w-36 h-36 bg-gradient-to-br from-white to-yellow-400 opacity-100 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black">
+          <div className="absolute top-0 right-0 sm:w-48 sm:h-48 w-36 h-36 bg-gradient-to-br from-white to-blue-400 opacity-100 rounded-full transform -translate-x-1/4 translate-y-1/4 shadow-xl shadow-black">
             <Image
               src="/AFLogo.png"
               width={100} // Adjust for small screens
@@ -171,11 +171,11 @@ const SignUpForm = ({ token }: { token: string }) => {
               alt="Logo"
               className="w-24 h-24 sm:w-32 sm:h-32 lg:w-42 lg:h-42 mt-6 mx-auto opacity-100"
             />
-            <div className="absolute top-0 left-0 w-6 h-6 sm:w-10 sm:h-10 bg-gradient-to-br from-white to-blue-400 rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
+            <div className="absolute top-0 left-0 w-6 h-6 sm:w-10 sm:h-10 bg-gradient-to-br from-white to-amber-900 rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black"></div>
           </div>
 
           {/* Additional Circle on Top Left */}
-          <div className="absolute top-0 left-0 lg:w-10 lg:h-10 bg-gradient-to-br from-white to-red-400 opacity-60 rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black hidden sm:block"></div>
+          <div className="absolute top-0 left-0 lg:w-10 lg:h-10 bg-gradient-to-br from-white to-amber-900 opacity-60 rounded-full transform translate-x-1/4 translate-y-1/4 shadow-xl shadow-black hidden sm:block"></div>
 
           {/* Semi-transparent overlay */}
           <div className="absolute inset-0 bg-blue-100 opacity-20 sm:opacity-20" />
