@@ -6,6 +6,7 @@ import SessionWrapper from "@/components/SessionWrapper";
 import { getServerSession } from "next-auth";
 import NavbarLogin from "@/components/NavbarLogedIn";
 import ReCaptchaProvider from "@/components/ReCaptachaProvider";
+// import Footer from "@/components/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -21,6 +22,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "My Resume App",
   description: "Your Online Resume",
+  viewport: "initial-scale=1, width=device-width", // Add it here
 };
 
 export default async function RootLayout({
@@ -41,6 +43,7 @@ export default async function RootLayout({
             <nav>{!!session && <NavbarLogin />}</nav>
             <nav>{!session && <Navbar />} </nav>
             {children}
+            {/* <Footer /> */}
           </body>
         </SessionWrapper>
       </ReCaptchaProvider>
