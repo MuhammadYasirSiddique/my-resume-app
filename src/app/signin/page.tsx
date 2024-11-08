@@ -1,5 +1,5 @@
 import React from "react";
-import SigninForm from "./Form";
+import SigninForm from "./SingInForm";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { createToken, removeToken } from "@/lib/sessionTokens";

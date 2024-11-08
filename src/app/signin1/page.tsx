@@ -1,5 +1,5 @@
 import React from "react";
-import SigninForm from "./SingInForm";
+import SigninForm from "./Form";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { createToken, removeToken } from "@/lib/sessionTokens";
@@ -28,8 +28,7 @@ async function Signin() {
 
   return (
     <div>
-      <SigninForm />
-      {/* token={token} /> */}
+      <SigninForm token={token} />
     </div>
   );
 }
