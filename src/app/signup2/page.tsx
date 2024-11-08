@@ -14,7 +14,6 @@ import {
 import Image from "next/image";
 
 import { Great_Vibes, Montserrat } from "next/font/google";
-import GitHubIcon from "@mui/icons-material/GitHub";
 import XIcon from "@mui/icons-material/X";
 
 import {

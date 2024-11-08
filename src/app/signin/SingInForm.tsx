@@ -29,7 +29,6 @@ import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { signIn } from "next-auth/react";
-import { Eye, EyeOff } from "lucide-react";
 
 const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400" });
 const montserrat = Montserrat({ subsets: ["latin"], weight: "300" });
