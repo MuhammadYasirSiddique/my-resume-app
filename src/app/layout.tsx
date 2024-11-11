@@ -22,12 +22,18 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "My Resume App",
   description: "Your Online Resume",
+<<<<<<< HEAD
   // viewport: "initial-scale=1, width=device-width", // Add it here
 };
 
 // Move viewport to a separate export
 export const viewport = "initial-scale=1, width=device-width";
 
+=======
+  viewport: "initial-scale=1, width=device-width", // Add it here
+};
+
+>>>>>>> acf6ed0ab4e0bd8a21990b2f799608cfe77e8fc5
 export default async function RootLayout({
   children,
 }: Readonly<{
