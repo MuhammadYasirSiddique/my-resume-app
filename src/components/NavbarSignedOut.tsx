@@ -81,7 +81,12 @@ function Navbar() {
             <Button
               variant="contained"
               color="primary"
-              className="bg-blue-800 hover:bg-blue-700 rounded-full"
+              // className="bg-blue-800 hover:bg-blue-700 rounded-full"
+              sx={{
+                borderRadius: "16px", // Adjust as needed
+                padding: "6px 12px",
+                fontSize: "0.8rem",
+              }}
             >
               Register
             </Button>
